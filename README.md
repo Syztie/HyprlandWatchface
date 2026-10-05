@@ -24,8 +24,8 @@ Version 2, rein deklarativ (`android:hasCode="false"`).
 Jeder Push baut in GitHub Actions die APK, prüft sie (XML-Validator,
 Memory-Footprint, Layout-Audit) und legt sie als Pre-Release **testbuild** ab:
 
-- Release-Seite: <https://github.com/syztie/hyprlandwatchface/releases/tag/testbuild>
-- APK direkt: <https://github.com/syztie/hyprlandwatchface/releases/download/testbuild/hyprland-watchface.apk>
+- Release-Seite: <https://github.com/Syztie/HyprlandWatchface/releases/tag/testbuild>
+- APK direkt: <https://github.com/Syztie/HyprlandWatchface/releases/download/testbuild/hyprland-watchface.apk>
 
 ### Einmalig einrichten
 
