@@ -1,0 +1,94 @@
+name: Build and validate
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build debug APK
+        run: >
+          ./gradlew :app:assembleDebug
+          -PversionCode=${{ github.run_number }}
+          -PversionName=0.2.0-${{ github.run_number }}-${GITHUB_SHA::7}
+
+      - name: Cache validation tools
+        uses: actions/cache@v4
+        with:
+          path: tools/bin
+          key: wff-tools-${{ hashFiles('tools/fetch-tools.sh') }}
+
+      - name: Build validation tools
+        run: tools/fetch-tools.sh
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: pip install pillow
+
+      - name: Validate XML (WFF v2)
+        run: make validate-xml 2>&1 | tee validate-xml.log
+
+      - name: Memory footprint
+        run: make memory 2>&1 | tee memory.log
+
+      - name: Layout audit
+        run: make audit 2>&1 | tee audit.log
+
+      - name: Render previews
+        run: make preview
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Build ${{ github.run_number }} (${GITHUB_SHA::7})"
+            for f in validate-xml memory audit; do
+              [ -f "$f.log" ] || continue
+              echo "### $f"; echo '```'; tail -n 25 "$f.log"; echo '```'
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Collect outputs
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/debug/app-debug.apk dist/hyprland-watchface.apk
+          cp build/preview/*.png dist/
+          cp validate-xml.log memory.log audit.log dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hyprland-watchface-${{ github.run_number }}
+          path: dist/
+
+      # Rolling pre-release with a fixed URL, so the newest test build can be
+      # downloaded on the phone and installed on the watch.
+      - name: Publish test build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          notes="Branch ${GITHUB_REF_NAME}, commit ${GITHUB_SHA::7}, build ${{ github.run_number }}.
+          Install: see README, section 'Testen nur mit Handy und Uhr'."
+          gh release delete testbuild --yes --cleanup-tag || true
+          gh release create testbuild dist/* --prerelease --target "$GITHUB_SHA" \
+            --title "Testbuild ${{ github.run_number }} (${GITHUB_SHA::7})" --notes "$notes"

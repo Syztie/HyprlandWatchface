@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Milestone 1: empty watch face to verify build, install and selection. -->
+<WatchFace width="450" height="450">
+  <Metadata key="CLOCK_TYPE" value="DIGITAL" />
+  <Metadata key="PREVIEW_TIME" value="14:32:07" />
+  <Scene backgroundColor="#ff1a1b26" />
+</WatchFace>
