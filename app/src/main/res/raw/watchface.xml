@@ -1,7 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Milestone 1: empty watch face to verify build, install and selection. -->
+<!--
+  Hyprland watch face, Watch Face Format version 2.
+
+  Coordinate space is 450 x 450. Text boxes are derived from the baselines in
+  docs/reference.svg: a PartText centres its line box vertically, and for
+  JetBrains Mono (ascent 1.02 em, descent 0.30 em) that puts the baseline at
+  box centre + 0.36 * font size.
+
+  Milestone 2: static layout with sample texts, theme Tokyo Night.
+-->
 <WatchFace width="450" height="450">
   <Metadata key="CLOCK_TYPE" value="DIGITAL" />
   <Metadata key="PREVIEW_TIME" value="14:32:07" />
-  <Scene backgroundColor="#ff1a1b26" />
+
+  <Scene backgroundColor="#ff1a1b26">
+
+    <!-- Waybar: workspace-style weekday strip, date, ISO week -->
+    <Group name="waybar" x="0" y="0" width="450" height="450">
+      <PartDraw name="waybar_frame" x="0" y="0" width="450" height="450">
+        <RoundRectangle x="90" y="58" width="270" height="38" cornerRadiusX="6" cornerRadiusY="6">
+          <Stroke color="#ff414868" thickness="1.5" />
+        </RoundRectangle>
+        <!-- Active "workspace": today, Monday in the static layout -->
+        <RoundRectangle x="100" y="66" width="18" height="22" cornerRadiusX="4" cornerRadiusY="4">
+          <Fill color="#ff7aa2f7" />
+        </RoundRectangle>
+      </PartDraw>
+      <PartText name="weekday_0" x="100" y="66" width="18" height="23">
+        <Text align="CENTER"><Font family="jetbrains_mono_regular" size="16" color="#ff1a1b26">m</Font></Text>
+      </PartText>
+      <PartText name="weekday_1" x="118" y="66" width="18" height="23">
+        <Text align="CENTER"><Font family="jetbrains_mono_regular" size="16" color="#ff565f89">d</Font></Text>
+      </PartText>
+      <PartText name="weekday_2" x="136" y="66" width="18" height="23">
+        <Text align="CENTER"><Font family="jetbrains_mono_regular" size="16" color="#ff565f89">m</Font></Text>
+      </PartText>
+      <PartText name="weekday_3" x="154" y="66" width="18" height="23">
+        <Text align="CENTER"><Font family="jetbrains_mono_regular" size="16" color="#ff565f89">d</Font></Text>
+      </PartText>
+      <PartText name="weekday_4" x="172" y="66" width="18" height="23">
+        <Text align="CENTER"><Font family="jetbrains_mono_regular" size="16" color="#ff565f89">f</Font></Text>
+      </PartText>
+      <PartText name="weekday_5" x="190" y="66" width="18" height="23">
+        <Text align="CENTER"><Font family="jetbrains_mono_regular" size="16" color="#ff565f89">s</Font></Text>
+      </PartText>
+      <PartText name="weekday_6" x="208" y="66" width="18" height="23">
+        <Text align="CENTER"><Font family="jetbrains_mono_regular" size="16" color="#ff565f89">s</Font></Text>
+      </PartText>
+      <PartText name="date" x="236" y="66" width="70" height="23">
+        <Text align="START"><Font family="jetbrains_mono_regular" size="16" color="#ffc0caf5">05.10</Font></Text>
+      </PartText>
+      <PartText name="iso_week" x="280" y="66" width="70" height="23">
+        <Text align="END"><Font family="jetbrains_mono_regular" size="16" color="#ff7dcfff">kw41</Font></Text>
+      </PartText>
+    </Group>
+
+    <!-- Active tile: time, seconds, notification count -->
+    <Group name="clock" x="0" y="0" width="450" height="450">
+      <PartDraw name="clock_frame" x="0" y="0" width="450" height="450">
+        <RoundRectangle x="42" y="109" width="366" height="93" cornerRadiusX="6" cornerRadiusY="6">
+          <Stroke color="#ff7aa2f7" thickness="3" />
+        </RoundRectangle>
+      </PartDraw>
+      <PartText name="time" x="69" y="106" width="300" height="100">
+        <Text align="CENTER"><Font family="jetbrains_mono_medium" size="74" color="#ffc0caf5">14:32</Font></Text>
+      </PartText>
+      <PartText name="seconds" x="336" y="167" width="60" height="31">
+        <Text align="END"><Font family="jetbrains_mono_regular" size="22" color="#ff565f89">:07</Font></Text>
+      </PartText>
+    </Group>
+
+    <Group name="notifications" x="0" y="0" width="450" height="450">
+      <PartDraw name="notification_dot" x="0" y="0" width="450" height="450">
+        <Ellipse x="372" y="124" width="8" height="8">
+          <Fill color="#ffbb9af7" />
+        </Ellipse>
+      </PartDraw>
+      <PartText name="notification_count" x="346" y="115" width="50" height="25">
+        <Text align="END"><Font family="jetbrains_mono_regular" size="18" color="#ffbb9af7">3</Font></Text>
+      </PartText>
+    </Group>
+
+    <!-- Weather row -->
+    <Group name="weather" x="0" y="0" width="450" height="450">
+      <PartDraw name="weather_frames" x="0" y="0" width="450" height="450">
+        <RoundRectangle x="32" y="215" width="122" height="74" cornerRadiusX="6" cornerRadiusY="6">
+          <Stroke color="#ff414868" thickness="1.5" />
+        </RoundRectangle>
+        <RoundRectangle x="164" y="215" width="122" height="74" cornerRadiusX="6" cornerRadiusY="6">
+          <Stroke color="#ff414868" thickness="1.5" />
+        </RoundRectangle>
+        <RoundRectangle x="296" y="215" width="122" height="74" cornerRadiusX="6" cornerRadiusY="6">
+          <Stroke color="#ff414868" thickness="1.5" />
+        </RoundRectangle>
+      </PartDraw>
+      <PartText name="temp_title" x="43" y="222" width="105" height="25">
+        <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff565f89">~/temp</Font></Text>
+      </PartText>
+      <PartText name="temp_value" x="43" y="246" width="105" height="39">
+        <Text align="START"><Font family="jetbrains_mono_regular" size="29" color="#ffe0af68">14°</Font></Text>
+      </PartText>
+      <PartText name="rain_title" x="175" y="222" width="105" height="25">
+        <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff565f89">~/regen</Font></Text>
+      </PartText>
+      <PartText name="rain_value" x="175" y="246" width="105" height="39">
+        <Text align="START"><Font family="jetbrains_mono_regular" size="29" color="#ff7aa2f7">40%</Font></Text>
+      </PartText>
+      <PartText name="uv_title" x="307" y="222" width="105" height="25">
+        <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff565f89">~/uv max</Font></Text>
+      </PartText>
+      <PartText name="uv_value" x="307" y="246" width="105" height="39">
+        <Text align="START"><Font family="jetbrains_mono_regular" size="29" color="#ffff9e64">3</Font></Text>
+      </PartText>
+    </Group>
+
+    <!-- Steps tile -->
+    <Group name="steps" x="0" y="0" width="450" height="450">
+      <PartDraw name="steps_frame" x="0" y="0" width="450" height="450">
+        <RoundRectangle x="58" y="302" width="135" height="64" cornerRadiusX="6" cornerRadiusY="6">
+          <Stroke color="#ff414868" thickness="1.5" />
+        </RoundRectangle>
+      </PartDraw>
+      <PartText name="steps_title" x="69" y="307" width="118" height="25">
+        <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff565f89">~/schritte</Font></Text>
+      </PartText>
+      <PartText name="steps_value" x="69" y="329" width="118" height="35">
+        <Text align="START"><Font family="jetbrains_mono_regular" size="24" color="#ffbb9af7">6.2k</Font></Text>
+      </PartText>
+    </Group>
+
+    <!-- Battery tile: watch (circle) and phone (upright rounded rectangle) -->
+    <Group name="battery" x="0" y="0" width="450" height="450">
+      <PartDraw name="battery_frame" x="0" y="0" width="450" height="450">
+        <RoundRectangle x="202" y="302" width="190" height="64" cornerRadiusX="6" cornerRadiusY="6">
+          <Stroke color="#ff414868" thickness="1.5" />
+        </RoundRectangle>
+        <Ellipse x="214" y="340" width="14" height="14">
+          <Stroke color="#ff9ece6a" thickness="2" />
+        </Ellipse>
+        <RoundRectangle x="298" y="337" width="11" height="18" cornerRadiusX="2.5" cornerRadiusY="2.5">
+          <Stroke color="#ff7dcfff" thickness="2" />
+        </RoundRectangle>
+      </PartDraw>
+      <PartText name="battery_title" x="213" y="307" width="170" height="25">
+        <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff565f89">~/akku</Font></Text>
+      </PartText>
+      <PartText name="watch_battery" x="235" y="332" width="60" height="30">
+        <Text align="START"><Font family="jetbrains_mono_regular" size="22" color="#ff9ece6a">78%</Font></Text>
+      </PartText>
+      <PartText name="phone_battery" x="317" y="332" width="70" height="30">
+        <Text align="START"><Font family="jetbrains_mono_regular" size="22" color="#ff7dcfff">64%</Font></Text>
+      </PartText>
+    </Group>
+
+    <!-- Next event line -->
+    <Group name="event" x="0" y="0" width="450" height="450">
+      <PartText name="event_line" x="85" y="382" width="280" height="27">
+        <Text align="CENTER"><Font family="jetbrains_mono_regular" size="19" color="#ffe0af68">&gt; 15:00 termin</Font></Text>
+      </PartText>
+    </Group>
+
+  </Scene>
 </WatchFace>
