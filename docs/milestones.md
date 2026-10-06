@@ -1,6 +1,6 @@
 # Meilensteine, Abweichungen, offene Punkte
 
-Stand: 06.10.2026 (M1–M5 auf der Uhr bestätigt, M6/M7 im Test)
+Stand: 06.10.2026 (M1–M7 umgesetzt; offen: Themenwahl auf der Uhr)
 
 ## Geprüfte Fakten aus der Referenz
 
@@ -167,6 +167,10 @@ Zeit ist auch relativ (`27 min.`). Neue Lösung: Makros in
 (WFF hat kein `indexOf`) und entfernen den Doppelpunkt. Ein leerer Titel zählt
 wie kein Titel. Bekannte Grenze: Ein Termin ohne Zeitangabe, dessen Titel selbst
 früh ein `": "` enthält, verliert diesen Doppelpunkt.
+
+Auf der Uhr bestätigt (06.10.): Doppelpunkt-Fix und Always-on-Display ohne
+Rahmen. Offen: Die Themen erscheinen unter *Anpassen*, ließen sich beim ersten
+Test aber nicht auswählen (vermutlich Bedienung: wischen/drehen statt tippen).
 
 ## M7 Abschluss
 
