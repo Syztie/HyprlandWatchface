@@ -118,6 +118,8 @@ class Parser:
             return val[1:-1]
         if kind == "src":
             return self.ctx.lookup(val[1:-1])
+        if kind == "id" and val == "null":
+            return None
         if kind == "id":
             self.take("(")
             args = []
@@ -155,7 +157,9 @@ def apply(op, a, b):
     if op == "||":
         return truthy(a) or truthy(b)
     if op in ("==", "!="):
-        if isinstance(a, str) or isinstance(b, str):
+        if a is None or b is None:
+            eq = a is b
+        elif isinstance(a, str) or isinstance(b, str):
             eq = str(a) == str(b)
         else:
             eq = num(a) == num(b)

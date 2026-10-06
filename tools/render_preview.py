@@ -47,12 +47,16 @@ class Context:
     def __init__(self, now, sources, config, ambient):
         self.now = now
         self.sources = dict(sources)
+        # Weather sample data is 30 minutes old unless a test says otherwise.
+        self.sources.setdefault("WEATHER.LAST_UPDATED", (now.timestamp() - 1800) * 1000)
         self.config = config
         self.ambient = ambient
 
     def lookup(self, name):
         if name in self.sources:
             return self.sources[name]
+        if name.startswith("COMPLICATION."):
+            return None
         if name.startswith("CONFIGURATION."):
             parts = name.split(".")
             option = self.config.get(parts[1])
@@ -77,6 +81,7 @@ def time_source(name, now):
         "MINUTE": now.minute, "MINUTE_Z": f"{now.minute:02d}",
         "SECOND": now.second, "SECOND_Z": f"{now.second:02d}",
         "WEEK_IN_YEAR": (now.timetuple().tm_yday - 1) // 7 + 1,
+        "UTC_TIMESTAMP": now.timestamp() * 1000,
     }
     return table.get(name)
 
@@ -114,8 +119,19 @@ class Renderer:
                     return v.get("value")
         return default
 
+    def attr(self, el, name, default=None):
+        """Attribute value after Transform (expression) and ambient Variant."""
+        value = el.get(name, default)
+        for t in el.findall("Transform"):
+            if t.get("target") == name:
+                value = evaluate(t.get("value"), self.ctx)
+        return self.variant_attr(el, name, value)
+
+    def pos(self, el, ox, oy):
+        return ox + int(float(self.attr(el, "x", 0))), oy + int(float(self.attr(el, "y", 0)))
+
     def alpha_of(self, el):
-        return int(float(self.variant_attr(el, "alpha", el.get("alpha", "255")))) / 255.0
+        return max(0.0, min(1.0, float(self.attr(el, "alpha", "255")) / 255.0))
 
     def children(self, parent, ox, oy, alpha):
         for el in parent:
@@ -123,23 +139,23 @@ class Renderer:
             if tag == "Group":
                 a = alpha * self.alpha_of(el)
                 if a > 0:
-                    self.children(el, ox + int(el.get("x", 0)), oy + int(el.get("y", 0)), a)
+                    self.children(el, *self.pos(el, ox, oy), a)
             elif tag == "Condition":
                 self.condition(el, ox, oy, alpha)
             elif tag == "PartDraw":
                 a = alpha * self.alpha_of(el)
                 if a > 0:
-                    self.part_draw(el, ox + int(el.get("x")), oy + int(el.get("y")), a)
+                    self.part_draw(el, *self.pos(el, ox, oy), a)
             elif tag == "PartText":
                 a = alpha * self.alpha_of(el)
                 if a > 0:
-                    self.part_text(el, ox + int(el.get("x")), oy + int(el.get("y")), a)
+                    self.part_text(el, *self.pos(el, ox, oy), a)
             elif tag == "ComplicationSlot":
                 self.complication(el, ox, oy, alpha)
             elif tag == "DigitalClock":
                 a = alpha * self.alpha_of(el)
                 if a > 0:
-                    self.digital_clock(el, ox + int(el.get("x")), oy + int(el.get("y")), a)
+                    self.digital_clock(el, *self.pos(el, ox, oy), a)
 
     def condition(self, el, ox, oy, alpha):
         exprs = {e.get("name"): (e.text or "").strip()
@@ -212,11 +228,16 @@ class Renderer:
             d.rectangle(box, **kw)
 
     def text_of(self, font_el):
+        lower = font_el.find("Lower")
+        if lower is not None:
+            return self.text_of(lower).lower()
         tmpl = font_el.find("Template")
         if tmpl is None:
             return font_el.text or ""
         params = [p.get("expression") for p in tmpl.findall("Parameter")]
-        return format_template(tmpl.text or "", [evaluate(p, self.ctx) for p in params])
+        # Template text may be split around Parameter children (CDATA, tails).
+        text = (tmpl.text or "") + "".join((p.tail or "") for p in tmpl.findall("Parameter"))
+        return format_template(text, [evaluate(p, self.ctx) for p in params])
 
     def part_text(self, el, ox, oy, alpha, text=None, font_el=None, align=None):
         text_el = el.find("Text")
@@ -224,6 +245,11 @@ class Renderer:
             font_el = text_el.find("Font")
             text = self.text_of(font_el)
             align = text_el.get("align", "CENTER")
+            if text_el.get("ellipsis") == "TRUE":
+                font = self.font(font_el.get("family"), float(font_el.get("size")))
+                limit = int(el.get("width")) * self.s
+                while text and font.getlength(text) > limit:
+                    text = text[:-2] + "…"
         self.draw_text(text, font_el, align, ox, oy, int(el.get("width")), int(el.get("height")), alpha)
 
     def draw_text(self, text, font_el, align, x, y, w, h, alpha):

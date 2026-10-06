@@ -1,6 +1,6 @@
 # Meilensteine, Abweichungen, offene Punkte
 
-Stand: 05.10.2026
+Stand: 06.10.2026
 
 ## Geprüfte Fakten aus der Referenz
 
@@ -71,6 +71,70 @@ Auf der Uhr zu prüfen:
   denselben Betrag.
 - Wird JetBrains Mono geladen? Fällt die Uhr auf die Systemschrift zurück, wäre
   das am fehlenden Monospace-Look sofort sichtbar.
+
+## M2 auf der Uhr (Galaxy Watch8, SM-L315F, Wear OS 6, API 36)
+
+Bestätigt. Die Textgrundlinien weichen höchstens 1 Einheit von der Berechnung
+ab, JetBrains Mono wird geladen. Der orange Punkt links am Rand ist die
+Benachrichtigungsanzeige von One UI Watch, nicht Teil des Zifferblatts.
+
+Paketnamen auf der Uhr: Wetter `com.samsung.android.watch.weather`,
+Samsung Health `com.samsung.android.wear.shealth`, Kalender
+`com.samsung.android.calendar`.
+
+## M3 Eingebaute Daten
+
+- Uhrzeit über `DigitalClock`/`TimeText format="hh:mm" hourFormat="24"`.
+- Sekunden `:` + `[SECOND_Z]`.
+- Wochenleiste: Kästchen und Buchstabe des heutigen Tags wandern per
+  `Transform target="x"` auf `100 + 18 × ((DAY_OF_WEEK + 5) % 7)`. Die Farbe
+  eines Font lässt sich erst ab v4 per Ausdruck ändern, deshalb liegt der
+  hervorgehobene Buchstabe als eigene Ebene über dem gedämpften.
+- Datum `[DAY_Z].[MONTH_Z]`.
+- ISO-Woche per Ausdruck (Donnerstag der Woche), getestet für jeden Tag 2000–2040.
+- Schritte unter 1000 voll, sonst `6.2k` (auf 100 abgeschnitten, nicht gerundet).
+  Die Ziffern laufen über `numberFormat("0", …)`, damit eine deutsche Uhr keinen
+  Dezimalpunkt in ein Komma verwandelt.
+- Akku `[BATTERY_PERCENT]%`.
+- Benachrichtigungen: Gruppe bei 0 per `alpha` ausgeblendet. Der Punkt rückt
+  bei zwei- und dreistelligen Zahlen nach links.
+- `tools/test_expressions.py` prüft alle Ausdrücke offline.
+
+Abweichungen:
+
+- Kalenderwoche ohne führende Null (`kw1`). Die Vorgabe nennt nur `kw41`.
+
+## M4 Wetter
+
+- Temperatur ganzzahlig in °C. Meldet die Uhr Fahrenheit (`TEMPERATURE_UNIT == 2`),
+  wird umgerechnet.
+- Regenwahrscheinlichkeit `[WEATHER.CHANCE_OF_PRECIPITATION]%`.
+- UV-Maximum: `WEATHER.DAYS.0.UV_INDEX`. Liegt der aktuelle Wert darüber, gilt
+  der aktuelle. Ohne Tagesvorhersage der aktuelle Wert.
+- Leerzustand: nicht verfügbar oder `IS_ERROR` zeigt `--` in muted.
+- Veraltete Daten (älter als 3 Stunden laut `WEATHER.LAST_UPDATED`) erscheinen in
+  muted. Das ist meine Auslegung von „niemals einen veralteten Wert ohne
+  Kennzeichnung“.
+- Antippen der Wetterzeile öffnet `com.samsung.android.watch.weather`.
+
+## M5 Complications
+
+- Slot 0 Handy-Akku (`RANGED_VALUE`, `SHORT_TEXT`, `EMPTY`), keine
+  Standardquelle. Leer zeigt `--` in muted.
+- Slot 1 Nächster Termin (`LONG_TEXT`, `SHORT_TEXT`, `EMPTY`), Standardquelle
+  `NEXT_EVENT`. Darstellung `> TITEL TEXT` in Kleinbuchstaben, nach 22 Zeichen
+  mit `…` gekürzt. Leer zeigt `> frei` in muted.
+- Beide zeichnen sich im Kachelstil selbst. Antippen löst die Tap-Aktion der
+  Datenquelle aus.
+- Antippen der Schritte-Kachel öffnet `com.samsung.android.wear.shealth`.
+
+Auf der Uhr zu prüfen:
+
+- In welchen Feldern liefert Samsungs Terminquelle Uhrzeit und Titel? Erwartet:
+  Uhrzeit im Titel, Termin im Text. Steht es verdreht da, tausche ich die Reihenfolge.
+- Liefert `WEATHER.DAYS.0.UV_INDEX` einen plausiblen Wert? Vergleich mit der
+  Samsung-Wetter-App.
+- Erscheint die Benachrichtigungszahl?
 
 ## Offene Punkte
 

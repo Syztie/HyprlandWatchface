@@ -54,6 +54,20 @@ Memory-Footprint, Layout-Audit) und legt sie als Pre-Release **testbuild** ab:
 Shell-Befehle (z. B. `getprop`, `pm list packages`) laufen in Bugjaeger unter
 *Shell*.
 
+## Complication-Felder zuweisen
+
+Das Zifferblatt hat zwei Felder, die du auf der Uhr belegst: Zifferblatt lange
+drücken → *Anpassen* → zu den Komplikationen wischen → Feld antippen.
+
+| Feld | Inhalt | Standard |
+| --- | --- | --- |
+| Handy-Akku (neben dem Handy-Symbol in `~/akku`) | Akkustand des Handys | leer, zeigt `--` |
+| Nächster Termin (unterste Zeile) | beliebige Quelle mit Text | nächster Kalendertermin |
+
+Für den Handy-Akku brauchst du eine Zusatz-App, die ihn als Complication
+anbietet, z. B. [Phone Battery Complication](https://play.google.com/store/apps/details?id=com.weartools.phonebattcomp)
+(auf Handy und Uhr installieren). Danach erscheint sie in der Auswahl des Felds.
+
 ## Entwicklung am Rechner (Arch Linux)
 
 Voraussetzungen: JDK 17, Android-SDK (`sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"`),

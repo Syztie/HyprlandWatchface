@@ -36,6 +36,7 @@ memory: $(TOOLS_BIN)/memory-footprint.jar $(APK)
 
 audit:
 	$(PYTHON) tools/audit.py
+	$(PYTHON) tools/test_expressions.py
 
 $(APK):
 	./gradlew :app:assembleDebug
