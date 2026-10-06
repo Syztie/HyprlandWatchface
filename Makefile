@@ -5,6 +5,7 @@
 #   make install      install the APK on the watch via adb (WLAN)
 #   make screenshot   pull a screenshot from the watch into screenshots/
 #   make preview      render offline previews into build/preview/
+#   make generate     regenerate res/raw/watchface.xml from watchface/
 
 WFF_VERSION   := 2
 WATCHFACE_XML := app/src/main/res/raw/watchface.xml
@@ -14,17 +15,33 @@ TOOLS_BIN     := tools/bin
 ADB           ?= adb
 PYTHON        ?= python3
 
-.PHONY: build validate validate-xml memory audit install screenshot preview tools clean
+.PHONY: build generate check-generated icons validate validate-xml memory audit install screenshot preview tools clean
 
 build:
 	./gradlew :app:assembleDebug
+
+generate:
+	$(PYTHON) tools/build_watchface.py
+
+check-generated:
+	$(PYTHON) tools/build_watchface.py --check
+
+# Theme icons for the theme picker and flavors, rendered offline.
+THEMES = $(shell $(PYTHON) -c "import json;[print(i, t['id']) for i, t in enumerate(json.load(open('watchface/themes.json'))['themes'])]")
+
+icons:
+	@set -- $(THEMES); while [ $$# -ge 2 ]; do \
+	  echo "theme $$1: app/src/main/res/drawable/theme_$$2.png"; \
+	  $(PYTHON) tools/render_preview.py --theme $$1 --size 192 -o app/src/main/res/drawable/theme_$$2.png; \
+	  shift 2; \
+	done
 
 tools: $(TOOLS_BIN)/wff-validator.jar $(TOOLS_BIN)/memory-footprint.jar
 
 $(TOOLS_BIN)/wff-validator.jar $(TOOLS_BIN)/memory-footprint.jar:
 	tools/fetch-tools.sh
 
-validate: validate-xml memory audit
+validate: check-generated validate-xml memory audit
 
 validate-xml: $(TOOLS_BIN)/wff-validator.jar
 	java -jar $(TOOLS_BIN)/wff-validator.jar $(WFF_VERSION) $(WATCHFACE_XML)
@@ -36,6 +53,7 @@ memory: $(TOOLS_BIN)/memory-footprint.jar $(APK)
 
 audit:
 	$(PYTHON) tools/audit.py
+	$(PYTHON) tools/test_expressions.py
 
 $(APK):
 	./gradlew :app:assembleDebug
@@ -51,8 +69,11 @@ screenshot:
 
 preview:
 	@mkdir -p build/preview
-	$(PYTHON) tools/render_preview.py -o build/preview/active.png
-	$(PYTHON) tools/render_preview.py --ambient -o build/preview/ambient.png
+	@set -- $(THEMES); while [ $$# -ge 2 ]; do \
+	  $(PYTHON) tools/render_preview.py --theme $$1 -o build/preview/active-$$1.png; \
+	  $(PYTHON) tools/render_preview.py --theme $$1 --ambient -o build/preview/ambient-$$1.png; \
+	  shift 2; \
+	done
 
 clean:
 	./gradlew clean

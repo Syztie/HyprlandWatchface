@@ -10,6 +10,7 @@ Checks the rules from the design handover that the XSD validator cannot see:
 Exits non-zero if any check fails.
 """
 import datetime
+import json
 import math
 import os
 import sys
@@ -22,7 +23,9 @@ from sample_data import SAMPLE  # noqa: E402
 CENTER, RADIUS, EDGE_MARGIN = 225.0, 225.0, 6.0
 AMBIENT_LIT_LIMIT = 0.15
 FONTS = {"jetbrains_mono_regular", "jetbrains_mono_medium"}
-TOKYO_NIGHT = {"1a1b26", "414868", "565f89", "c0caf5", "7aa2f7", "e0af68", "ff9e64", "bb9af7", "9ece6a", "7dcfff"}
+THEMES = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                                   "watchface", "themes.json")))
+PALETTE = {c.lstrip("#").lower() for t in THEMES["themes"] for c in t["colors"]}
 
 failures = []
 VERBOSE = "-v" in sys.argv
@@ -97,29 +100,35 @@ def main():
             if v and v.startswith("#"):
                 for c in v.split():
                     used.add(c.lstrip("#")[-6:].lower())
-    allowed = TOKYO_NIGHT | {"000000"}
-    ucs = root.find("UserConfigurations")
-    if ucs is not None:
-        for opt in ucs.iter("ColorOption"):
-            allowed |= {c.lstrip("#")[-6:].lower() for c in opt.get("colors").split()}
+    allowed = PALETTE | {"000000"}
     check(used <= allowed, f"colors from the palette ({len(used)} used, extra: {sorted(used - allowed)})")
 
     print("Ambient mode")
     if not any(v.get("mode") == "AMBIENT" for v in root.iter("Variant")):
         print("  WARN  no ambient variants yet (milestone 6)")
         return finish()
-    amb, _ = render(root, ambient=True)
-    gray = amb.convert("L")
-    w, h = gray.size
-    px = gray.load()
-    inside = lit = 0
-    for yy in range(h):
-        for xx in range(w):
-            if math.hypot(xx + 0.5 - w / 2, yy + 0.5 - h / 2) <= w / 2:
-                inside += 1
-                lit += px[xx, yy] > 10
-    ratio = lit / inside
-    check(ratio < AMBIENT_LIT_LIMIT, f"lit pixels in ambient {ratio:.1%} (limit {AMBIENT_LIT_LIMIT:.0%})")
+    for i, theme in enumerate(THEMES["themes"]):
+        name = theme["id"]
+        img, _ = render(root, ambient=False, theme=i)
+        bg = img.convert("RGB").getpixel((225, 30))
+        want = tuple(int(theme["colors"][0].lstrip("#")[k:k + 2], 16) for k in (0, 2, 4))
+        check(max(abs(a - b) for a, b in zip(bg, want)) <= 2, f"{name}: active background {bg}")
+        amb, texts = render(root, ambient=True, theme=i)
+        shown = sorted(t[0] for t in texts)
+        check(shown == sorted(["14:32", "05.10", "kw41"]), f"{name}: ambient shows only time, date, week {shown}")
+        gray = amb.convert("L")
+        w, h = gray.size
+        px = gray.load()
+        inside = lit = 0
+        for yy in range(0, h):
+            for xx in range(0, w):
+                if math.hypot(xx + 0.5 - w / 2, yy + 0.5 - h / 2) <= w / 2:
+                    inside += 1
+                    lit += px[xx, yy] > 10
+        ratio = lit / inside
+        check(ratio < AMBIENT_LIT_LIMIT, f"{name}: lit pixels in ambient {ratio:.1%} (limit {AMBIENT_LIT_LIMIT:.0%})")
+        check(amb.convert("RGB").getpixel((30, 225)) == (0, 0, 0), f"{name}: ambient background black")
+        print(f"  info  {name}: {ratio:.1%} lit in ambient")
 
     finish()
 

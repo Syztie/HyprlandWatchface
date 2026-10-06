@@ -13,6 +13,6 @@ SAMPLE = {
     "WEATHER.DAYS.0.IS_AVAILABLE": True,
     "WEATHER.DAYS.0.UV_INDEX": 3,
     # Complication slots: slot id -> data the provider would send.
-    "__slot0": {"type": "SHORT_TEXT", "TEXT": "64%"},
-    "__slot1": {"type": "LONG_TEXT", "TEXT": "15:00 termin", "TITLE": ""},
+    "__slot0": {"type": "RANGED_VALUE", "RANGED_VALUE_VALUE": 64, "RANGED_VALUE_MIN": 0, "RANGED_VALUE_MAX": 100},
+    "__slot1": {"type": "LONG_TEXT", "TEXT": "termin", "TITLE": "15:00"},
 }
