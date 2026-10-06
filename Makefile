@@ -27,10 +27,13 @@ check-generated:
 	$(PYTHON) tools/build_watchface.py --check
 
 # Theme icons for the theme picker and flavors, rendered offline.
+THEMES = $(shell $(PYTHON) -c "import json;[print(i, t['id']) for i, t in enumerate(json.load(open('watchface/themes.json'))['themes'])]")
+
 icons:
-	for i in 0 1 2 3; do \
-	  id=$$($(PYTHON) -c "import json;print(json.load(open('watchface/themes.json'))['themes'][$$i]['id'])"); \
-	  $(PYTHON) tools/render_preview.py --theme $$i --size 192 -o app/src/main/res/drawable/theme_$$id.png; \
+	@set -- $(THEMES); while [ $$# -ge 2 ]; do \
+	  echo "theme $$1: app/src/main/res/drawable/theme_$$2.png"; \
+	  $(PYTHON) tools/render_preview.py --theme $$1 --size 192 -o app/src/main/res/drawable/theme_$$2.png; \
+	  shift 2; \
 	done
 
 tools: $(TOOLS_BIN)/wff-validator.jar $(TOOLS_BIN)/memory-footprint.jar
@@ -66,9 +69,10 @@ screenshot:
 
 preview:
 	@mkdir -p build/preview
-	for i in 0 1 2 3; do \
-	  $(PYTHON) tools/render_preview.py --theme $$i -o build/preview/active-$$i.png; \
-	  $(PYTHON) tools/render_preview.py --theme $$i --ambient -o build/preview/ambient-$$i.png; \
+	@set -- $(THEMES); while [ $$# -ge 2 ]; do \
+	  $(PYTHON) tools/render_preview.py --theme $$1 -o build/preview/active-$$1.png; \
+	  $(PYTHON) tools/render_preview.py --theme $$1 --ambient -o build/preview/ambient-$$1.png; \
+	  shift 2; \
 	done
 
 clean:

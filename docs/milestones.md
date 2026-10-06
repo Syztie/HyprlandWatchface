@@ -165,8 +165,8 @@ Befund aus dem Test (06.10.): Der Doppelpunkt stand weiter da
 Zeit ist auch relativ (`27 min.`). Neue Lösung: Makros in
 `tools/build_watchface.py` suchen das erste `": "` in den ersten 16 Zeichen
 (WFF hat kein `indexOf`) und entfernen den Doppelpunkt. Ein leerer Titel zählt
-wie kein Titel. Bekannte Grenze: Ein Termin ohne Zeitangabe, dessen Titel selbst
-früh ein `": "` enthält, verliert diesen Doppelpunkt.
+wie kein Titel. Nach dem Codex-Review nur noch, wenn Titel bzw. Text mit einer
+Ziffer beginnt. Texte wie `Abgesagt: Kino` bleiben damit unverändert.
 
 Auf der Uhr bestätigt (06.10.): Doppelpunkt-Fix und Always-on-Display ohne
 Rahmen. Themenwechsel unter *Anpassen* → *Thema* funktioniert (wischen bzw.

@@ -230,7 +230,7 @@ erzeugt ein Generator (`tools/build_watchface.py`), zum Beispiel die
 
 | Beobachtung | Lösung |
 | --- | --- |
-| Samsungs Terminquelle liefert `<Zeit>: <Titel>`, also `> 14:00: …`. Der erste Fix erkannte nur `HH:MM:`, die Uhr zeigte aber auch relative Zeiten (`27 min.:`). | Zweiter Anlauf: Suche nach dem ersten `": "` in den ersten 16 Zeichen, unabhängig vom Zeitformat |
+| Samsungs Terminquelle liefert `<Zeit>: <Titel>`, also `> 14:00: …`. Der erste Fix erkannte nur `HH:MM:`, die Uhr zeigte aber auch relative Zeiten (`27 min.:`). | Zweiter Anlauf: Suche nach dem ersten `": "` in den ersten 16 Zeichen, unabhängig vom Zeitformat. Nach dem Codex-Review nur noch, wenn der Text mit einer Ziffer beginnt (siehe unten) |
 | Die Themen ließen sich scheinbar nicht auswählen. | Bedienfrage, kein Fehler: Im Samsung-Editor wechselt man Optionen durch Wischen bzw. Drehen, nicht durch Antippen |
 | Der orange Systempunkt für Benachrichtigungen erschien im Screenshot. | Gehört zu One UI Watch, nicht zum Zifferblatt. Für `preview.png` übermalt |
 
@@ -243,6 +243,29 @@ erzeugt ein Generator (`tools/build_watchface.py`), zum Beispiel die
   Selbst-Audit auf, nach dem ersten Lauf. Der erste CI-Lauf hat seine Prüfungen
   also nicht wirklich bewiesen, erst der zweite.
 
+## Code-Review durch Codex
+
+Den Pull Request hat OpenAI Codex in einer eigenen Cloud-Session geprüft.
+
+Codex hat die Offline-Prüfungen selbst nachgefahren:
+- Generator-Check,
+- Formel-Tests,
+- Audit.
+
+Android-Build, offizieller Validator und echte Uhr waren in der Review-Session
+nicht verfügbar.
+
+Zwei nicht blockierende Befunde, beide umgesetzt:
+
+| Befund | Umsetzung |
+| --- | --- |
+| Die Doppelpunkt-Bereinigung traf auch Texte ohne Zeitangabe: `Abgesagt: Kino` wurde zu `abgesagt kino`. Das betrifft auch andere Datenquellen, die man dem Feld zuweisen kann. | Bereinigt wird nur noch, wenn Titel bzw. Text mit einer Ziffer beginnt, also bei `14:00` oder `27 min.`. Regressionstests für normale Titel mit Doppelpunkt ergänzt. |
+| Die Anleitung für ein fünftes Thema war unvollständig: Icons entstanden nur für vier Themen, die Namens-Strings fehlten. | `make icons` und `make preview` lesen die Themen aus `themes.json`. Der Generator erzeugt die Namens-Strings (`res/values/theme_strings.xml`) und bricht ab, wenn ein Icon fehlt. In einer Kopie des Repos mit einem fünften Thema durchgespielt. |
+
+Die beiden Agenten haben sich ergänzt. Codex fand Randfälle in der Logik und
+der Doku. Claude Code hatte die Prüfwerkzeuge geschrieben, mit denen Codex das
+nachvollziehen konnte.
+
 ## Bilanz
 
 - **Ergebnis:** Alle sieben Meilensteine des Handovers sind umgesetzt und auf
@@ -252,6 +275,7 @@ erzeugt ein Generator (`tools/build_watchface.py`), zum Beispiel die
   - ein Handover-Dokument,
   - vier Testrunden auf der Uhr,
   - eine Designentscheidung (die Themen-Lösung),
+  - ein Code-Review durch einen zweiten Agenten,
   - ein paar kurze Rückmeldungen.
 - **PC eingeschaltet:** nie.
 - **Was den Ansatz trägt:**
@@ -269,7 +293,6 @@ erzeugt ein Generator (`tools/build_watchface.py`), zum Beispiel die
 
 - Lizenz für den eigenen Code festlegen. Die Schrift steht unter der OFL, siehe
   `docs/OFL-JetBrainsMono.txt`.
-- Ergebnisse des Codex-Reviews einarbeiten.
 - Für den Play Store: Release-Signatur statt Debug-Schlüssel und eine eigene
   Paket-ID.
 
@@ -337,8 +360,8 @@ anbietet, z. B. [Phone Battery Complication](https://play.google.com/store/apps/
 | Pfad | Inhalt |
 | --- | --- |
 | `watchface/watchface.template.xml` | **Quelle** des Zifferblatts (Koordinatenraum 450 × 450), Farben als `@{rolle}` |
-| `watchface/themes.json` | Die zehn Farbrollen und die vier Themen |
-| `app/src/main/res/raw/watchface.xml` | Daraus erzeugt (`make generate`), nicht von Hand bearbeiten |
+| `watchface/themes.json` | Die zehn Farbrollen und die vier Themen (Name, Farben) |
+| `app/src/main/res/raw/watchface.xml`, `app/src/main/res/values/theme_strings.xml` | Daraus erzeugt (`make generate`), nicht von Hand bearbeiten |
 | `app/src/main/res/xml/watch_face_info.xml` | Vorschau, Editierbarkeit, Flavors |
 | `app/src/main/res/font/` | JetBrains Mono Regular und Medium (OFL, siehe `docs/OFL-JetBrainsMono.txt`) |
 | `app/src/main/res/drawable/` | `preview.png` (echter Screenshot), Themen-Icons |
@@ -354,8 +377,16 @@ anbietet, z. B. [Phone Battery Complication](https://play.google.com/store/apps/
 Eine Farboption im Watch Face Format fasst höchstens fünf Farben, das Design
 braucht zehn Rollen. Deshalb ist das Thema eine Listen-Auswahl.
 `tools/build_watchface.py` schreibt jeden `<ThemeSwitch>`-Block der Vorlage
-einmal pro Thema mit festen Farben in die XML. Für neue Farben oder ein fünftes
-Thema `watchface/themes.json` ändern und `make icons generate` ausführen.
+einmal pro Thema mit festen Farben in die XML.
+
+Für neue Farben oder ein weiteres Thema in `watchface/themes.json` einen Eintrag
+mit `id`, `name` und zehn Farben in der Reihenfolge von `roles` anlegen. Dann
+`make icons generate` ausführen. Das erzeugt:
+- das Icon,
+- den Anzeigenamen (`res/values/theme_strings.xml`),
+- die Listen-Option,
+- den Flavor,
+- die Kopie des Layouts.
 
 ## Entwicklung am Rechner (optional)
 

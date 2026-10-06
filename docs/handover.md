@@ -1,6 +1,6 @@
 # Watchface Hyprland – Übergabe für Claude Code
 
-Oct 5, 2026 · @Max
+Oct 5, 2026
 
 ## Auftrag
 
