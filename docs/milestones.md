@@ -1,6 +1,6 @@
 # Meilensteine, Abweichungen, offene Punkte
 
-Stand: 06.10.2026
+Stand: 06.10.2026 (M1–M5 auf der Uhr bestätigt, M6/M7 im Test)
 
 ## Geprüfte Fakten aus der Referenz
 
@@ -22,7 +22,7 @@ die Seiten unter developer.android.com/training/wearables/wff bzw.
 | Schritte, Akku, Benachrichtigungen | `[STEP_COUNT]`, `[BATTERY_PERCENT]`, `[UNREAD_NOTIFICATION_COUNT]`, alle seit v1. |
 | Complications | Typen `SHORT_TEXT`, `LONG_TEXT`, `RANGED_VALUE`, `EMPTY` u. a. Standardquelle über `DefaultProviderPolicy defaultSystemProvider="NEXT_EVENT"`. Inhalt selbst zeichnen über `[COMPLICATION.TEXT]`, `[COMPLICATION.TITLE]`, `[COMPLICATION.RANGED_VALUE_VALUE]`. |
 | Antippen | `<Launch target="paket.name"/>` in `Group` oder `Part*`, seit v1. |
-| Themen | `ColorConfiguration` mit `ColorOption colors="#… #… …"`, Zugriff per `[CONFIGURATION.theme.<index>]`. Flavors ab v2. |
+| Themen | `ColorConfiguration`/`ColorOption colors="…"` erlaubt laut XSD **höchstens 5 Farben** (alle Versionen 1–5). Für 10 Rollen deshalb `ListConfiguration` mit einer Kopie des Layouts je Thema (siehe M6). Flavors ab v2, `MultipleInstancesAllowed` und `FlavorsSupported` müssen `true` sein. |
 | Ambient | `<Variant mode="AMBIENT" target="alpha" value="0"/>` usw. |
 | Textausrichtung | `verticalAlign` existiert in v2 nicht. Text wird in seiner Box vertikal zentriert. Die Boxen sind so berechnet, dass die Grundlinien denen in `reference.svg` entsprechen (JetBrains Mono: Grundlinie = Boxmitte + 0,36 × Schriftgröße). |
 
@@ -128,22 +128,53 @@ Abweichungen:
   Datenquelle aus.
 - Antippen der Schritte-Kachel öffnet `com.samsung.android.wear.shealth`.
 
-Auf der Uhr zu prüfen:
+Auf der Uhr bestätigt (06.10.): Reihenfolge Uhrzeit/Titel richtig, UV-Wert
+stimmt mit der Samsung-Wetter-App, Benachrichtigungszahl verschwindet bei 0,
+Tap-Ziele öffnen die richtigen Apps, Handy-Akku über Phone Battery
+Complication funktioniert.
 
-- In welchen Feldern liefert Samsungs Terminquelle Uhrzeit und Titel? Erwartet:
-  Uhrzeit im Titel, Termin im Text. Steht es verdreht da, tausche ich die Reihenfolge.
-- Liefert `WEATHER.DAYS.0.UV_INDEX` einen plausiblen Wert? Vergleich mit der
-  Samsung-Wetter-App.
-- Erscheint die Benachrichtigungszahl?
+Befund: Samsungs Terminquelle hängt einen Doppelpunkt an die Uhrzeit
+(`> 14:00: abgesagt: …`). Behoben in M6: Ein Ausdruck entfernt ihn, egal ob die
+Uhrzeit im Titel oder am Anfang des Texts steht (`H:MM:` und `HH:MM:`).
+
+## M6 Themen und Always-on-Display
+
+Abweichung (mit dir abgestimmt): Eine Farboption fasst höchstens 5 Farben. Statt
+einer `ColorConfiguration` mit 10 Farben je Option gibt es eine
+`ListConfiguration` „Thema“ mit vier Optionen. Die Quelle ist
+`watchface/watchface.template.xml` mit Farbrollen `@{rolle}`.
+`tools/build_watchface.py` kopiert jeden `<ThemeSwitch>`-Block einmal pro Thema
+aus `watchface/themes.json`. Die erzeugte `res/raw/watchface.xml` ist
+eingecheckt, die CI prüft, dass sie aktuell ist.
+
+- Vier Flavors (je Thema einer) mit Icon, `MultipleInstancesAllowed = true`.
+- Themen-Icons (192 px) aus dem Offline-Renderer.
+- Always-on-Display: Szene schwarz, die Themenfläche liegt im aktiven Teil.
+  Sichtbar: Uhrzeit ohne Sekunden, Datum, Kalenderwoche (Rolle text), Rahmen der
+  Uhrzeit-Kachel 1,5 Einheiten. Alles andere inkl. Complications ausgeblendet.
+  Offline gemessen 3,7–3,8 % leuchtende Pixel je Thema.
+
+Entscheidungen:
+
+- Rahmenfarbe im AOD: Akzentfarbe. Die Vorgabe nennt für den Rahmen keine Rolle.
+- Datum und Kalenderwoche behalten im AOD ihre Position aus der Waybar.
+
+## M7 Abschluss
+
+- `preview.png` ist der echte Screenshot von der Uhr aus M2 (Beispieldaten,
+  Tokyo Night). Der orange System-Indikator für Benachrichtigungen am linken
+  Rand ist übermalt.
+- README mit Build, Installation (PC und nur Handy), Zuweisung der
+  Complication-Felder und Themen.
+- XML-Validator und Memory-Footprint laufen bei jedem Push in der CI.
 
 ## Offene Punkte
 
-1. UV-Maximum: Tagesfeld `WEATHER.DAYS.0.UV_INDEX` vorhanden. Ob Samsung es
-   befüllt, zeigt erst M4 auf der Uhr.
-2. Kalenderwoche: Quelle ist nicht ISO. Berechnung per Ausdruck in M3, offline
-   gegen alle Tage 2020–2040 getestet.
-3. Wochenleiste Mo–So: weiterhin Annahme, umgesetzt wie vorgegeben.
-4. Schritte-Format `6.2k`: über `numberFormat` geplant (M3).
-5. Benachrichtigungszähler: Quelle existiert seit v1. Ob Samsung ihn liefert,
-   zeigt M3.
-6. Waybar-Breite: passt (siehe M2).
+Alle sechs Punkte aus dem Handover sind geklärt:
+
+1. UV-Maximum: `WEATHER.DAYS.0.UV_INDEX`, auf der Uhr bestätigt.
+2. Kalenderwoche: per Ausdruck, offline für 2000–2040 und auf der Uhr bestätigt.
+3. Wochenleiste Mo–So: umgesetzt und auf der Uhr bestätigt.
+4. Schritte-Format `6.2k`: per Ausdruck umgesetzt.
+5. Benachrichtigungszähler: funktioniert auf der Uhr.
+6. Waybar-Breite: passt bei Schriftgröße 16.

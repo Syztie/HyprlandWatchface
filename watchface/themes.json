@@ -1,0 +1,14 @@
+{
+  "roles": ["bg", "border", "muted", "text", "accent", "yellow", "orange", "purple", "green", "cyan"],
+  "default": "tokyo_night",
+  "themes": [
+    {"id": "tokyo_night", "name": "Tokyo Night",
+     "colors": ["#1a1b26", "#414868", "#565f89", "#c0caf5", "#7aa2f7", "#e0af68", "#ff9e64", "#bb9af7", "#9ece6a", "#7dcfff"]},
+    {"id": "catppuccin_mocha", "name": "Catppuccin Mocha",
+     "colors": ["#1e1e2e", "#45475a", "#6c7086", "#cdd6f4", "#89b4fa", "#f9e2af", "#fab387", "#cba6f7", "#a6e3a1", "#89dceb"]},
+    {"id": "gruvbox_dark", "name": "Gruvbox Dark",
+     "colors": ["#282828", "#504945", "#928374", "#ebdbb2", "#83a598", "#fabd2f", "#fe8019", "#d3869b", "#b8bb26", "#8ec07c"]},
+    {"id": "nord", "name": "Nord",
+     "colors": ["#2e3440", "#434c5e", "#616e88", "#d8dee9", "#81a1c1", "#ebcb8b", "#d08770", "#b48ead", "#a3be8c", "#88c0d0"]}
+  ]
+}

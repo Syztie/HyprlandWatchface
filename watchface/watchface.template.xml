@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Hyprland watch face, Watch Face Format version 2.
+
+  Coordinate space is 450 x 450. Text boxes are derived from the baselines in
+  docs/reference.svg: a PartText centres its line box vertically, and for
+  JetBrains Mono (ascent 1.02 em, descent 0.30 em) that puts the baseline at
+  box centre + 0.36 * font size (confirmed on a Galaxy Watch8 within 1 unit).
+
+  TEMPLATE: res/raw/watchface.xml is generated from this file by
+  tools/build_watchface.py ("make generate"). Colors are written as @{role}
+  with the roles from watchface/themes.json. Every <ThemeSwitch> block is
+  expanded into a ListConfiguration "theme" with one copy per theme, because a
+  ColorOption holds at most 5 colors and the design needs 10 roles.
+
+  Ambient mode: black background, only time, date, ISO week (role text) and a
+  1.5 unit outline of the clock tile. Everything else sits in "active_only".
+-->
+<WatchFace width="450" height="450">
+  <Metadata key="CLOCK_TYPE" value="DIGITAL" />
+  <Metadata key="PREVIEW_TIME" value="14:32:07" />
+
+  <!-- @THEME_CONFIGURATION@ -->
+
+  <Scene backgroundColor="#ff000000">
+
+    <ThemeSwitch name="face" width="450" height="450">
+    <!-- Everything hidden in ambient mode -->
+    <Group name="active_only" x="0" y="0" width="450" height="450">
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+
+      <PartDraw name="background" x="0" y="0" width="450" height="450">
+        <Rectangle x="0" y="0" width="450" height="450">
+          <Fill color="@{bg}" />
+        </Rectangle>
+      </PartDraw>
+
+      <!-- Waybar: workspace-style weekday strip (Monday first) and ISO week -->
+        <PartDraw name="waybar_frame" x="0" y="0" width="450" height="450">
+          <RoundRectangle x="90" y="58" width="270" height="38" cornerRadiusX="6" cornerRadiusY="6">
+            <Stroke color="@{border}" thickness="1.5" />
+          </RoundRectangle>
+        </PartDraw>
+        <PartText name="weekday_0" x="100" y="66" width="18" height="23">
+          <Text align="CENTER"><Font family="jetbrains_mono_regular" size="16" color="@{muted}">m</Font></Text>
+        </PartText>
+        <PartText name="weekday_1" x="118" y="66" width="18" height="23">
+          <Text align="CENTER"><Font family="jetbrains_mono_regular" size="16" color="@{muted}">d</Font></Text>
+        </PartText>
+        <PartText name="weekday_2" x="136" y="66" width="18" height="23">
+          <Text align="CENTER"><Font family="jetbrains_mono_regular" size="16" color="@{muted}">m</Font></Text>
+        </PartText>
+        <PartText name="weekday_3" x="154" y="66" width="18" height="23">
+          <Text align="CENTER"><Font family="jetbrains_mono_regular" size="16" color="@{muted}">d</Font></Text>
+        </PartText>
+        <PartText name="weekday_4" x="172" y="66" width="18" height="23">
+          <Text align="CENTER"><Font family="jetbrains_mono_regular" size="16" color="@{muted}">f</Font></Text>
+        </PartText>
+        <PartText name="weekday_5" x="190" y="66" width="18" height="23">
+          <Text align="CENTER"><Font family="jetbrains_mono_regular" size="16" color="@{muted}">s</Font></Text>
+        </PartText>
+        <PartText name="weekday_6" x="208" y="66" width="18" height="23">
+          <Text align="CENTER"><Font family="jetbrains_mono_regular" size="16" color="@{muted}">s</Font></Text>
+        </PartText>
+        <!-- Active "workspace": DAY_OF_WEEK counts 1 = Sunday, so the Monday-based
+             index is (DAY_OF_WEEK + 5) % 7. Box and letter move to today's slot. -->
+        <PartDraw name="weekday_today_box" x="100" y="66" width="18" height="22">
+          <Transform target="x" value="100 + 18 * (([DAY_OF_WEEK] + 5) % 7)" />
+          <RoundRectangle x="0" y="0" width="18" height="22" cornerRadiusX="4" cornerRadiusY="4">
+            <Fill color="@{accent}" />
+          </RoundRectangle>
+        </PartDraw>
+        <PartText name="weekday_today" x="100" y="66" width="18" height="23">
+          <Transform target="x" value="100 + 18 * (([DAY_OF_WEEK] + 5) % 7)" />
+          <Text align="CENTER">
+            <Font family="jetbrains_mono_regular" size="16" color="@{bg}">
+              <Template>%s<Parameter expression="subText(&quot;mdmdfss&quot;, (([DAY_OF_WEEK] + 5) % 7), (([DAY_OF_WEEK] + 5) % 7) + 1)" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+        <!-- WEEK_IN_YEAR is ALIGNED_WEEK_OF_YEAR, not ISO 8601. The ISO week is the
+             week of this week's Thursday: t = DAY_OF_YEAR - isoWeekday + 4, wrapped
+             into the previous or next year where needed. -->
+        <PartText name="iso_week" x="280" y="66" width="70" height="23">
+          <Text align="END">
+            <Font family="jetbrains_mono_regular" size="16" color="@{cyan}">
+              <Template>kw%s<Parameter expression="numberFormat(&quot;0&quot;, (([DAY_OF_YEAR] - ([DAY_OF_WEEK] + 5) % 7 + 3) &lt; 1) ? (floor((([DAY_OF_YEAR] - ([DAY_OF_WEEK] + 5) % 7 + 3) + 364 + (((([YEAR] - 1) % 4 == 0) &amp;&amp; (([YEAR] - 1) % 100 != 0)) || (([YEAR] - 1) % 400 == 0) ? 1 : 0)) / 7) + 1) : ((([DAY_OF_YEAR] - ([DAY_OF_WEEK] + 5) % 7 + 3) &gt; 365 + (((([YEAR]) % 4 == 0) &amp;&amp; (([YEAR]) % 100 != 0)) || (([YEAR]) % 400 == 0) ? 1 : 0)) ? 1 : (floor((([DAY_OF_YEAR] - ([DAY_OF_WEEK] + 5) % 7 + 3) - 1) / 7) + 1)))" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+
+      <!-- Active tile: 3 unit accent frame and seconds -->
+        <PartDraw name="clock_frame" x="0" y="0" width="450" height="450">
+          <RoundRectangle x="42" y="109" width="366" height="93" cornerRadiusX="6" cornerRadiusY="6">
+            <Stroke color="@{accent}" thickness="3" />
+          </RoundRectangle>
+        </PartDraw>
+        <PartText name="seconds" x="336" y="167" width="60" height="31">
+          <Text align="END">
+            <Font family="jetbrains_mono_regular" size="22" color="@{muted}">
+              <Template>:%s<Parameter expression="[SECOND_Z]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+
+      <!-- Hidden when there are no unread notifications. The dot keeps its gap
+           to the right-aligned count: one digit is 10.8 units wide at size 18. -->
+      <Group name="notifications" x="0" y="0" width="450" height="450">
+        <Transform target="alpha" value="[UNREAD_NOTIFICATION_COUNT] &gt; 0 ? 255 : 0" />
+        <PartDraw name="notification_dot" x="372" y="124" width="8" height="8">
+          <Transform target="x" value="round(383 - 10.8 * ([UNREAD_NOTIFICATION_COUNT] &gt;= 100 ? 3 : ([UNREAD_NOTIFICATION_COUNT] &gt;= 10 ? 2 : 1)))" />
+          <Ellipse x="0" y="0" width="8" height="8">
+            <Fill color="@{purple}" />
+          </Ellipse>
+        </PartDraw>
+        <PartText name="notification_count" x="336" y="115" width="60" height="25">
+          <Text align="END">
+            <Font family="jetbrains_mono_regular" size="18" color="@{purple}">
+              <Template>%s<Parameter expression="[UNREAD_NOTIFICATION_COUNT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Group>
+
+      <!-- Weather row. No data or an error: two dashes. Data older than 3 hours is
+           shown in the muted color so a stale value never looks current.
+           UV max: the day's forecast maximum, or the current value if higher. -->
+      <Group name="weather" x="0" y="0" width="450" height="450">
+        <PartDraw name="weather_frames" x="0" y="0" width="450" height="450">
+          <RoundRectangle x="32" y="215" width="122" height="74" cornerRadiusX="6" cornerRadiusY="6">
+            <Stroke color="@{border}" thickness="1.5" />
+          </RoundRectangle>
+          <RoundRectangle x="164" y="215" width="122" height="74" cornerRadiusX="6" cornerRadiusY="6">
+            <Stroke color="@{border}" thickness="1.5" />
+          </RoundRectangle>
+          <RoundRectangle x="296" y="215" width="122" height="74" cornerRadiusX="6" cornerRadiusY="6">
+            <Stroke color="@{border}" thickness="1.5" />
+          </RoundRectangle>
+        </PartDraw>
+        <PartText name="temp_title" x="43" y="222" width="105" height="25">
+          <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="@{muted}">~/temp</Font></Text>
+        </PartText>
+        <PartText name="rain_title" x="175" y="222" width="105" height="25">
+          <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="@{muted}">~/regen</Font></Text>
+        </PartText>
+        <PartText name="uv_title" x="307" y="222" width="105" height="25">
+          <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="@{muted}">~/uv max</Font></Text>
+        </PartText>
+        <Condition>
+          <Expressions>
+            <Expression name="weather_missing"><![CDATA[![WEATHER.IS_AVAILABLE] || [WEATHER.IS_ERROR]]]></Expression>
+            <Expression name="weather_stale"><![CDATA[[UTC_TIMESTAMP] - [WEATHER.LAST_UPDATED] > 10800000]]></Expression>
+          </Expressions>
+          <Compare expression="weather_missing">
+            <PartText name="temp_value_empty" x="43" y="246" width="105" height="39">
+              <Text align="START"><Font family="jetbrains_mono_regular" size="29" color="@{muted}">--</Font></Text>
+            </PartText>
+            <PartText name="rain_value_empty" x="175" y="246" width="105" height="39">
+              <Text align="START"><Font family="jetbrains_mono_regular" size="29" color="@{muted}">--</Font></Text>
+            </PartText>
+            <PartText name="uv_value_empty" x="307" y="246" width="105" height="39">
+              <Text align="START"><Font family="jetbrains_mono_regular" size="29" color="@{muted}">--</Font></Text>
+            </PartText>
+          </Compare>
+          <Compare expression="weather_stale">
+            <PartText name="temp_value" x="43" y="246" width="105" height="39">
+              <Text align="START">
+                <Font family="jetbrains_mono_regular" size="29" color="@{muted}">
+                  <Template>%s°<Parameter expression="numberFormat(&quot;0&quot;, [WEATHER.TEMPERATURE_UNIT] == 2 ? round(([WEATHER.TEMPERATURE] - 32) * 5 / 9) : round([WEATHER.TEMPERATURE]))" /></Template>
+                </Font>
+              </Text>
+            </PartText>
+            <PartText name="rain_value" x="175" y="246" width="105" height="39">
+              <Text align="START">
+                <Font family="jetbrains_mono_regular" size="29" color="@{muted}">
+                  <Template><![CDATA[%s%%]]><Parameter expression="numberFormat(&quot;0&quot;, [WEATHER.CHANCE_OF_PRECIPITATION])" /></Template>
+                </Font>
+              </Text>
+            </PartText>
+            <PartText name="uv_value" x="307" y="246" width="105" height="39">
+              <Text align="START">
+                <Font family="jetbrains_mono_regular" size="29" color="@{muted}">
+                  <Template>%s<Parameter expression="numberFormat(&quot;0&quot;, [WEATHER.DAYS.0.IS_AVAILABLE] ? ([WEATHER.DAYS.0.UV_INDEX] &gt; [WEATHER.UV_INDEX] ? [WEATHER.DAYS.0.UV_INDEX] : [WEATHER.UV_INDEX]) : [WEATHER.UV_INDEX])" /></Template>
+                </Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Default>
+            <PartText name="temp_value" x="43" y="246" width="105" height="39">
+              <Text align="START">
+                <Font family="jetbrains_mono_regular" size="29" color="@{yellow}">
+                  <Template>%s°<Parameter expression="numberFormat(&quot;0&quot;, [WEATHER.TEMPERATURE_UNIT] == 2 ? round(([WEATHER.TEMPERATURE] - 32) * 5 / 9) : round([WEATHER.TEMPERATURE]))" /></Template>
+                </Font>
+              </Text>
+            </PartText>
+            <PartText name="rain_value" x="175" y="246" width="105" height="39">
+              <Text align="START">
+                <Font family="jetbrains_mono_regular" size="29" color="@{accent}">
+                  <Template><![CDATA[%s%%]]><Parameter expression="numberFormat(&quot;0&quot;, [WEATHER.CHANCE_OF_PRECIPITATION])" /></Template>
+                </Font>
+              </Text>
+            </PartText>
+            <PartText name="uv_value" x="307" y="246" width="105" height="39">
+              <Text align="START">
+                <Font family="jetbrains_mono_regular" size="29" color="@{orange}">
+                  <Template>%s<Parameter expression="numberFormat(&quot;0&quot;, [WEATHER.DAYS.0.IS_AVAILABLE] ? ([WEATHER.DAYS.0.UV_INDEX] &gt; [WEATHER.UV_INDEX] ? [WEATHER.DAYS.0.UV_INDEX] : [WEATHER.UV_INDEX]) : [WEATHER.UV_INDEX])" /></Template>
+                </Font>
+              </Text>
+            </PartText>
+          </Default>
+        </Condition>
+      </Group>
+
+      <!-- Tap targets: transparent areas over the tiles that open the app. -->
+      <PartDraw name="tap_weather" x="32" y="215" width="386" height="74">
+        <Launch target="com.samsung.android.watch.weather" />
+        <Rectangle x="0" y="0" width="386" height="74">
+          <Fill color="#00000000" />
+        </Rectangle>
+      </PartDraw>
+
+      <!-- Steps tile -->
+      <Group name="steps" x="0" y="0" width="450" height="450">
+        <PartDraw name="steps_frame" x="0" y="0" width="450" height="450">
+          <RoundRectangle x="58" y="302" width="135" height="64" cornerRadiusX="6" cornerRadiusY="6">
+            <Stroke color="@{border}" thickness="1.5" />
+          </RoundRectangle>
+        </PartDraw>
+        <PartText name="steps_title" x="69" y="307" width="118" height="25">
+          <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="@{muted}">~/schritte</Font></Text>
+        </PartText>
+        <!-- Below 1000 the full count, above "6.2k" (truncated to 100 steps).
+             numberFormat("0", ...) keeps integers free of decimals and of locale
+             separators, so the dot stays a dot on a German watch. -->
+        <Condition>
+          <Expressions>
+            <Expression name="few_steps"><![CDATA[[STEP_COUNT] < 1000]]></Expression>
+          </Expressions>
+          <Compare expression="few_steps">
+            <PartText name="steps_value_full" x="69" y="329" width="118" height="35">
+              <Text align="START">
+                <Font family="jetbrains_mono_regular" size="24" color="@{purple}">
+                  <Template>%s<Parameter expression="[STEP_COUNT]" /></Template>
+                </Font>
+              </Text>
+            </PartText>
+          </Compare>
+          <Default>
+            <PartText name="steps_value_k" x="69" y="329" width="118" height="35">
+              <Text align="START">
+                <Font family="jetbrains_mono_regular" size="24" color="@{purple}">
+                  <Template>%s.%sk<Parameter expression="numberFormat(&quot;0&quot;, floor([STEP_COUNT] / 1000))" /><Parameter expression="numberFormat(&quot;0&quot;, floor([STEP_COUNT] / 100) % 10)" /></Template>
+                </Font>
+              </Text>
+            </PartText>
+          </Default>
+        </Condition>
+      </Group>
+
+      <PartDraw name="tap_steps" x="58" y="302" width="135" height="64">
+        <Launch target="com.samsung.android.wear.shealth" />
+        <Rectangle x="0" y="0" width="135" height="64">
+          <Fill color="#00000000" />
+        </Rectangle>
+      </PartDraw>
+
+      <!-- Battery tile: watch (circle) and phone (upright rounded rectangle) -->
+      <Group name="battery" x="0" y="0" width="450" height="450">
+        <PartDraw name="battery_frame" x="0" y="0" width="450" height="450">
+          <RoundRectangle x="202" y="302" width="190" height="64" cornerRadiusX="6" cornerRadiusY="6">
+            <Stroke color="@{border}" thickness="1.5" />
+          </RoundRectangle>
+          <Ellipse x="214" y="340" width="14" height="14">
+            <Stroke color="@{green}" thickness="2" />
+          </Ellipse>
+          <RoundRectangle x="298" y="337" width="11" height="18" cornerRadiusX="2.5" cornerRadiusY="2.5">
+            <Stroke color="@{cyan}" thickness="2" />
+          </RoundRectangle>
+        </PartDraw>
+        <PartText name="battery_title" x="213" y="307" width="170" height="25">
+          <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="@{muted}">~/akku</Font></Text>
+        </PartText>
+        <PartText name="watch_battery" x="235" y="332" width="60" height="30">
+          <Text align="START">
+            <Font family="jetbrains_mono_regular" size="22" color="@{green}">
+              <Template><![CDATA[%s%%]]><Parameter expression="[BATTERY_PERCENT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Group>
+    </Group>
+
+    <!-- Shown in both modes: date and time in role text -->
+    <PartText name="date" x="236" y="66" width="70" height="23">
+      <Text align="START">
+        <Font family="jetbrains_mono_regular" size="16" color="@{text}">
+          <Template>%s.%s<Parameter expression="[DAY_Z]" /><Parameter expression="[MONTH_Z]" /></Template>
+        </Font>
+      </Text>
+    </PartText>
+    <DigitalClock x="69" y="106" width="300" height="100">
+      <TimeText format="hh:mm" hourFormat="24" align="CENTER" x="0" y="0" width="300" height="100">
+        <Font family="jetbrains_mono_medium" size="74" color="@{text}" />
+      </TimeText>
+    </DigitalClock>
+
+    <!-- Ambient only: thin clock outline and the ISO week in role text -->
+    <Group name="ambient_only" x="0" y="0" width="450" height="450" alpha="0">
+      <Variant mode="AMBIENT" target="alpha" value="255" />
+      <PartDraw name="clock_frame_ambient" x="0" y="0" width="450" height="450">
+        <RoundRectangle x="42" y="109" width="366" height="93" cornerRadiusX="6" cornerRadiusY="6">
+          <Stroke color="@{accent}" thickness="1.5" />
+        </RoundRectangle>
+      </PartDraw>
+      <PartText name="iso_week_ambient" x="280" y="66" width="70" height="23">
+        <Text align="END">
+          <Font family="jetbrains_mono_regular" size="16" color="@{text}">
+            <Template>kw%s<Parameter expression="numberFormat(&quot;0&quot;, (([DAY_OF_YEAR] - ([DAY_OF_WEEK] + 5) % 7 + 3) &lt; 1) ? (floor((([DAY_OF_YEAR] - ([DAY_OF_WEEK] + 5) % 7 + 3) + 364 + (((([YEAR] - 1) % 4 == 0) &amp;&amp; (([YEAR] - 1) % 100 != 0)) || (([YEAR] - 1) % 400 == 0) ? 1 : 0)) / 7) + 1) : ((([DAY_OF_YEAR] - ([DAY_OF_WEEK] + 5) % 7 + 3) &gt; 365 + (((([YEAR]) % 4 == 0) &amp;&amp; (([YEAR]) % 100 != 0)) || (([YEAR]) % 400 == 0) ? 1 : 0)) ? 1 : (floor((([DAY_OF_YEAR] - ([DAY_OF_WEEK] + 5) % 7 + 3) - 1) / 7) + 1)))" /></Template>
+          </Font>
+        </Text>
+      </PartText>
+    </Group>
+    </ThemeSwitch>
+
+    <!-- Phone battery: complication slot, data from a companion app such as
+         "Phone Battery Complication". Tapping runs the provider's tap action. -->
+    <ComplicationSlot slotId="0" displayName="complication_phone_battery" x="296" y="332" width="96" height="30"
+        supportedTypes="RANGED_VALUE SHORT_TEXT EMPTY" isCustomizable="TRUE">
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+      <BoundingBox x="0" y="0" width="96" height="30" />
+      <Complication type="RANGED_VALUE">
+        <ThemeSwitch name="slot0_ranged_value" width="96" height="30">
+          <PartText name="phone_battery_ranged" x="21" y="0" width="70" height="30">
+            <Text align="START">
+              <Font family="jetbrains_mono_regular" size="22" color="@{cyan}">
+                <Template><![CDATA[%s%%]]><Parameter expression="numberFormat(&quot;0&quot;, [COMPLICATION.RANGED_VALUE_VALUE])" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+        </ThemeSwitch>
+      </Complication>
+      <Complication type="SHORT_TEXT">
+        <ThemeSwitch name="slot0_short_text" width="96" height="30">
+          <PartText name="phone_battery_text" x="21" y="0" width="70" height="30">
+            <Text align="START" ellipsis="TRUE" maxLines="1">
+              <Font family="jetbrains_mono_regular" size="22" color="@{cyan}">
+                <Lower><Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template></Lower>
+              </Font>
+            </Text>
+          </PartText>
+        </ThemeSwitch>
+      </Complication>
+      <Complication type="EMPTY">
+        <ThemeSwitch name="slot0_empty" width="96" height="30">
+          <PartText name="phone_battery_empty" x="21" y="0" width="70" height="30">
+            <Text align="START"><Font family="jetbrains_mono_regular" size="22" color="@{muted}">--</Font></Text>
+          </PartText>
+        </ThemeSwitch>
+      </Complication>
+    </ComplicationSlot>
+
+    <!-- Next event: complication slot, default provider is the system's next
+         calendar event. Lower case, cut off with an ellipsis after 22 characters
+         (253 units). Tapping runs the provider's tap action (the calendar).
+         Samsung's calendar source puts a colon after the time ("14:00:"). It is
+         removed whether the time arrives in the title or at the start of the text. -->
+    <ComplicationSlot slotId="1" displayName="complication_next_event" x="60" y="380" width="330" height="31"
+        supportedTypes="LONG_TEXT SHORT_TEXT EMPTY" isCustomizable="TRUE">
+      <DefaultProviderPolicy defaultSystemProvider="NEXT_EVENT" defaultSystemProviderType="LONG_TEXT" />
+      <Variant mode="AMBIENT" target="alpha" value="0" />
+      <BoundingBox x="0" y="0" width="330" height="31" />
+      <Complication type="LONG_TEXT">
+        <ThemeSwitch name="slot1_long_text" width="330" height="31">
+          <Condition>
+            <Expressions>
+              <Expression name="event_has_title"><![CDATA[[COMPLICATION.TITLE] != null]]></Expression>
+            </Expressions>
+            <Compare expression="event_has_title">
+            <PartText name="event_title_text" x="39" y="2" width="253" height="27">
+              <Text align="CENTER" ellipsis="TRUE" maxLines="1">
+                <Font family="jetbrains_mono_regular" size="19" color="@{yellow}">
+                  <Lower><Template>&gt; %s %s<Parameter expression="subText([COMPLICATION.TITLE], clamp(textLength([COMPLICATION.TITLE]) - 1, 0, textLength([COMPLICATION.TITLE])), textLength([COMPLICATION.TITLE])) == &quot;:&quot; ? subText([COMPLICATION.TITLE], 0, clamp(textLength([COMPLICATION.TITLE]) - 1, 0, textLength([COMPLICATION.TITLE]))) : [COMPLICATION.TITLE]" /><Parameter expression="[COMPLICATION.TEXT]" /></Template></Lower>
+                </Font>
+              </Text>
+            </PartText>
+            </Compare>
+            <Default>
+            <PartText name="event_text" x="39" y="2" width="253" height="27">
+              <Text align="CENTER" ellipsis="TRUE" maxLines="1">
+                <Font family="jetbrains_mono_regular" size="19" color="@{yellow}">
+                  <Lower><Template>&gt; %s%s<Parameter expression="(subText([COMPLICATION.TEXT], clamp(2, 0, textLength([COMPLICATION.TEXT])), clamp(3, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot; &amp;&amp; subText([COMPLICATION.TEXT], clamp(5, 0, textLength([COMPLICATION.TEXT])), clamp(6, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot;) ? subText([COMPLICATION.TEXT], clamp(0, 0, textLength([COMPLICATION.TEXT])), clamp(5, 0, textLength([COMPLICATION.TEXT]))) : ((subText([COMPLICATION.TEXT], clamp(1, 0, textLength([COMPLICATION.TEXT])), clamp(2, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot; &amp;&amp; subText([COMPLICATION.TEXT], clamp(4, 0, textLength([COMPLICATION.TEXT])), clamp(5, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot;) ? subText([COMPLICATION.TEXT], clamp(0, 0, textLength([COMPLICATION.TEXT])), clamp(4, 0, textLength([COMPLICATION.TEXT]))) : [COMPLICATION.TEXT])" /><Parameter expression="(subText([COMPLICATION.TEXT], clamp(2, 0, textLength([COMPLICATION.TEXT])), clamp(3, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot; &amp;&amp; subText([COMPLICATION.TEXT], clamp(5, 0, textLength([COMPLICATION.TEXT])), clamp(6, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot;) ? subText([COMPLICATION.TEXT], clamp(6, 0, textLength([COMPLICATION.TEXT])), clamp(textLength([COMPLICATION.TEXT]), 0, textLength([COMPLICATION.TEXT]))) : ((subText([COMPLICATION.TEXT], clamp(1, 0, textLength([COMPLICATION.TEXT])), clamp(2, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot; &amp;&amp; subText([COMPLICATION.TEXT], clamp(4, 0, textLength([COMPLICATION.TEXT])), clamp(5, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot;) ? subText([COMPLICATION.TEXT], clamp(5, 0, textLength([COMPLICATION.TEXT])), clamp(textLength([COMPLICATION.TEXT]), 0, textLength([COMPLICATION.TEXT]))) : &quot;&quot;)" /></Template></Lower>
+                </Font>
+              </Text>
+            </PartText>
+            </Default>
+          </Condition>
+        </ThemeSwitch>
+      </Complication>
+      <Complication type="SHORT_TEXT">
+        <ThemeSwitch name="slot1_short_text" width="330" height="31">
+          <Condition>
+            <Expressions>
+              <Expression name="event_has_title"><![CDATA[[COMPLICATION.TITLE] != null]]></Expression>
+            </Expressions>
+            <Compare expression="event_has_title">
+            <PartText name="event_title_text" x="39" y="2" width="253" height="27">
+              <Text align="CENTER" ellipsis="TRUE" maxLines="1">
+                <Font family="jetbrains_mono_regular" size="19" color="@{yellow}">
+                  <Lower><Template>&gt; %s %s<Parameter expression="subText([COMPLICATION.TITLE], clamp(textLength([COMPLICATION.TITLE]) - 1, 0, textLength([COMPLICATION.TITLE])), textLength([COMPLICATION.TITLE])) == &quot;:&quot; ? subText([COMPLICATION.TITLE], 0, clamp(textLength([COMPLICATION.TITLE]) - 1, 0, textLength([COMPLICATION.TITLE]))) : [COMPLICATION.TITLE]" /><Parameter expression="[COMPLICATION.TEXT]" /></Template></Lower>
+                </Font>
+              </Text>
+            </PartText>
+            </Compare>
+            <Default>
+            <PartText name="event_text" x="39" y="2" width="253" height="27">
+              <Text align="CENTER" ellipsis="TRUE" maxLines="1">
+                <Font family="jetbrains_mono_regular" size="19" color="@{yellow}">
+                  <Lower><Template>&gt; %s%s<Parameter expression="(subText([COMPLICATION.TEXT], clamp(2, 0, textLength([COMPLICATION.TEXT])), clamp(3, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot; &amp;&amp; subText([COMPLICATION.TEXT], clamp(5, 0, textLength([COMPLICATION.TEXT])), clamp(6, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot;) ? subText([COMPLICATION.TEXT], clamp(0, 0, textLength([COMPLICATION.TEXT])), clamp(5, 0, textLength([COMPLICATION.TEXT]))) : ((subText([COMPLICATION.TEXT], clamp(1, 0, textLength([COMPLICATION.TEXT])), clamp(2, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot; &amp;&amp; subText([COMPLICATION.TEXT], clamp(4, 0, textLength([COMPLICATION.TEXT])), clamp(5, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot;) ? subText([COMPLICATION.TEXT], clamp(0, 0, textLength([COMPLICATION.TEXT])), clamp(4, 0, textLength([COMPLICATION.TEXT]))) : [COMPLICATION.TEXT])" /><Parameter expression="(subText([COMPLICATION.TEXT], clamp(2, 0, textLength([COMPLICATION.TEXT])), clamp(3, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot; &amp;&amp; subText([COMPLICATION.TEXT], clamp(5, 0, textLength([COMPLICATION.TEXT])), clamp(6, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot;) ? subText([COMPLICATION.TEXT], clamp(6, 0, textLength([COMPLICATION.TEXT])), clamp(textLength([COMPLICATION.TEXT]), 0, textLength([COMPLICATION.TEXT]))) : ((subText([COMPLICATION.TEXT], clamp(1, 0, textLength([COMPLICATION.TEXT])), clamp(2, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot; &amp;&amp; subText([COMPLICATION.TEXT], clamp(4, 0, textLength([COMPLICATION.TEXT])), clamp(5, 0, textLength([COMPLICATION.TEXT]))) == &quot;:&quot;) ? subText([COMPLICATION.TEXT], clamp(5, 0, textLength([COMPLICATION.TEXT])), clamp(textLength([COMPLICATION.TEXT]), 0, textLength([COMPLICATION.TEXT]))) : &quot;&quot;)" /></Template></Lower>
+                </Font>
+              </Text>
+            </PartText>
+            </Default>
+          </Condition>
+        </ThemeSwitch>
+      </Complication>
+      <Complication type="EMPTY">
+        <ThemeSwitch name="slot1_empty" width="330" height="31">
+          <PartText name="event_free" x="39" y="2" width="253" height="27">
+            <Text align="CENTER"><Font family="jetbrains_mono_regular" size="19" color="@{muted}">&gt; frei</Font></Text>
+          </PartText>
+        </ThemeSwitch>
+      </Complication>
+    </ComplicationSlot>
+
+  </Scene>
+</WatchFace>

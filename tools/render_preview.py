@@ -142,6 +142,11 @@ class Renderer:
                     self.children(el, *self.pos(el, ox, oy), a)
             elif tag == "Condition":
                 self.condition(el, ox, oy, alpha)
+            elif tag == "ListConfiguration":
+                chosen = str(self.ctx.config.get(el.get("id")))
+                for opt in el.findall("ListOption"):
+                    if opt.get("id") == chosen:
+                        self.children(opt, ox, oy, alpha)
             elif tag == "PartDraw":
                 a = alpha * self.alpha_of(el)
                 if a > 0:
@@ -151,7 +156,9 @@ class Renderer:
                 if a > 0:
                     self.part_text(el, *self.pos(el, ox, oy), a)
             elif tag == "ComplicationSlot":
-                self.complication(el, ox, oy, alpha)
+                a = alpha * self.alpha_of(el)
+                if a > 0:
+                    self.complication(el, ox, oy, a)
             elif tag == "DigitalClock":
                 a = alpha * self.alpha_of(el)
                 if a > 0:
@@ -290,6 +297,8 @@ def load_config(root, theme):
     ucs = root.find("UserConfigurations")
     if ucs is None:
         return config
+    for lc in ucs.findall("ListConfiguration"):
+        config[lc.get("id")] = str(theme) if theme is not None else lc.get("defaultValue")
     for cc in ucs.findall("ColorConfiguration"):
         opts = cc.findall("ColorOption")
         chosen = opts[theme] if theme is not None else next(
@@ -308,6 +317,7 @@ def main():
     ap.add_argument("--time", default="2026-10-05T14:32:07")
     ap.add_argument("--set", action="append", default=[], help="KEY=VALUE sample data")
     ap.add_argument("--boxes", help="write measured text boxes to this file")
+    ap.add_argument("--size", type=int, help="scale the output to this many pixels")
     args = ap.parse_args()
 
     from sample_data import SAMPLE
@@ -321,6 +331,8 @@ def main():
     r = Renderer(ctx, args.scale)
     r.boxes = []
     img = r.render(root)
+    if args.size:
+        img = img.resize((args.size, args.size), Image.LANCZOS)
     img.convert("RGB").save(args.output)
     if args.boxes:
         with open(args.boxes, "w") as f:

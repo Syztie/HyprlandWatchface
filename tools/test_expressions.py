@@ -141,6 +141,12 @@ def main():
         ("long text", {"type": "LONG_TEXT", "TITLE": "15:00", "TEXT": "Quartalsplanung mit allen"},
          "> 15:00 quartalsplanu…"),
         ("empty", None, "> frei"),
+        ("colon in title", {"type": "LONG_TEXT", "TITLE": "14:00:", "TEXT": "Abgesagt: Kino"},
+         "> 14:00 abgesagt: kino"),
+        ("colon in text", {"type": "LONG_TEXT", "TEXT": "14:00: Abgesagt: Kino"}, "> 14:00 abgesagt: kino"),
+        ("colon, one-digit hour", {"type": "LONG_TEXT", "TEXT": "9:30: Arzt"}, "> 9:30 arzt"),
+        ("no time", {"type": "LONG_TEXT", "TEXT": "Urlaub"}, "> urlaub"),
+        ("very short text", {"type": "SHORT_TEXT", "TEXT": "a"}, "> a"),
     ]:
         expect(f"event {label}", want in texts(now, __slot1=slot), True)
     for label, slot, want in [

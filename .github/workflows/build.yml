@@ -24,6 +24,16 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: pip install pillow
+
+      - name: Generated watchface.xml is up to date
+        run: make check-generated
+
       - name: Build debug APK
         run: >
           ./gradlew :app:assembleDebug
@@ -38,13 +48,6 @@ jobs:
 
       - name: Build validation tools
         run: tools/fetch-tools.sh
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install Python dependencies
-        run: pip install pillow
 
       - name: Validate XML (WFF v2)
         run: make validate-xml 2>&1 | tee validate-xml.log

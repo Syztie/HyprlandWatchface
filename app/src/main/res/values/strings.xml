@@ -3,4 +3,9 @@
     <string name="watch_face_name">Hyprland</string>
     <string name="complication_phone_battery">Handy-Akku</string>
     <string name="complication_next_event">Nächster Termin</string>
+    <string name="theme_label">Thema</string>
+    <string name="theme_tokyo_night">Tokyo Night</string>
+    <string name="theme_catppuccin_mocha">Catppuccin Mocha</string>
+    <string name="theme_gruvbox_dark">Gruvbox Dark</string>
+    <string name="theme_nord">Nord</string>
 </resources>
