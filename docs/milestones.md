@@ -181,6 +181,21 @@ drehen, nicht tippen).
   Complication-Felder und Themen.
 - XML-Validator und Memory-Footprint laufen bei jedem Push in der CI.
 
+## Nach M7: Englisch und zweisprachige Doku
+
+- Kacheltitel auf Englisch: `~/rain`, `~/steps`, `~/battery`, `> free`
+  (`~/temp` und `~/uv max` waren es schon). Datum, `kw41` und die Wochenleiste
+  `m d m d f s s` bleiben auf deinen Wunsch im bisherigen Format.
+- Texte im Editor der Uhr: Englisch als Standard (`values/`), Deutsch als
+  Übersetzung (`values-de/`).
+- `README.md` auf Englisch, `README.de.md` auf Deutsch. `tools/check_readmes.py`
+  (`make docs`, CI) prüft gleiche Gliederung, Sprachlinks, Links und Anker.
+- Nachbesserung zum zweiten Codex-Befund: `make icons` erzeugt zuerst die XML,
+  sonst bekäme ein neues Thema ein leeres Icon. Das Audit prüft jetzt den
+  Hintergrund jedes Icons.
+- `preview.png` zeigt noch die deutschen Titel aus M2 und wird durch einen neuen
+  Screenshot ersetzt.
+
 ## Offene Punkte
 
 Alle sechs Punkte aus dem Handover sind geklärt:

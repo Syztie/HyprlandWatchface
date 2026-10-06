@@ -1,416 +1,431 @@
 # Hyprland Watch Face
 
-Ein Zifferblatt für die Samsung Galaxy Watch (Wear OS 5+, rund) im Stil eines
-Hyprland-Desktops: Waybar oben, darunter gerahmte Kacheln in JetBrains Mono,
-vier Farbthemen, Always-on-Display.
+**English** | [Deutsch](README.de.md)
 
-**Und ein Proof of Concept:** Das komplette Zifferblatt ist entstanden, ohne
-dass ein PC eingeschaltet wurde. Planung, Code, Builds, Tests, Code-Review und
-die Installation auf der eigenen Uhr liefen ausschließlich über Cloud-Sessions
-von KI-Agenten, GitHub, ein Android-Handy und die Uhr selbst.
+A watch face for the Samsung Galaxy Watch (Wear OS 5+, round) styled like a
+Hyprland desktop: a Waybar at the top, framed tiles in JetBrains Mono below,
+four color themes and an always-on display.
 
-| Auf der Uhr (Galaxy Watch8) | Alle Themen, oben aktiv, unten Always-on-Display (Offline-Render) |
+**It is also a proof of concept:** the whole watch face was built without
+turning on a PC. Planning, code, builds, tests, code review and installation on
+the watch ran entirely through cloud sessions of AI agents, GitHub, an Android
+phone and the watch itself.
+
+| On the watch (Galaxy Watch8, milestone 2, still with German tile titles) | All themes, active on top, always-on display below (offline render) |
 | --- | --- |
-| ![Screenshot von der Uhr](docs/images/watch-m2.png) | ![Themen](docs/images/themes.png) |
+| ![Screenshot from the watch](docs/images/watch-m2.png) | ![Themes](docs/images/themes.png) |
 
-Inhalt: [Das Zifferblatt](#das-zifferblatt) ·
-[Der Proof of Concept](#der-proof-of-concept) ·
-[Werkzeugkette](#die-werkzeugkette) · [Vorgehen](#vorgehen) ·
-[Methoden](#methoden) · [Was nicht ging](#was-nicht-ging-und-wie-es-gelöst-wurde) ·
-[Bilanz](#bilanz) · [Selbst ausprobieren](#testen-nur-mit-handy-und-uhr) ·
-[Entwicklung](#projektaufbau)
+Contents: [The watch face](#the-watch-face) ·
+[The proof of concept](#the-proof-of-concept) ·
+[Tool chain](#the-tool-chain) · [How it went](#how-it-went) ·
+[Methods](#methods) · [What did not work](#what-did-not-work-and-how-it-was-solved) ·
+[Results](#results) · [Try it yourself](#testing-with-just-a-phone-and-a-watch) ·
+[Development](#project-layout)
 
 ---
 
-## Das Zifferblatt
+## The watch face
 
-- **Waybar:** Wochenleiste Montag bis Sonntag, der heutige Tag hervorgehoben wie
-  ein aktiver Hyprland-Workspace, Datum und ISO-Kalenderwoche.
-- **Uhrzeit-Kachel** (die „aktive“ Kachel) mit Sekunden und Zähler ungelesener
-  Benachrichtigungen.
-- **Wetter:** Temperatur, Regenwahrscheinlichkeit, UV-Maximum des Tages.
-  Ohne Daten `--`, veraltete Daten (älter als 3 h) gedämpft.
-- **Schritte** (`6.2k`), **Akku** von Uhr und Handy (Handy über eine
-  Complication).
-- **Nächster Termin** als Complication, frei umbelegbar.
-- **Antippen** öffnet Samsung Wetter, Samsung Health bzw. die Aktion der
-  Complication.
-- **Vier Themen:** Tokyo Night, Catppuccin Mocha, Gruvbox Dark, Nord.
-- **Always-on-Display:** nur Uhrzeit, Datum und Kalenderwoche auf Schwarz, rund
-  3 % leuchtende Pixel.
+- **Waybar:** a Monday-to-Sunday weekday strip with today highlighted like an
+  active Hyprland workspace, the date and the ISO week number.
+- **Time tile** (the "active" tile) with seconds and an unread notification
+  count.
+- **Weather:** temperature, chance of rain, the day's maximum UV index. `--`
+  without data, muted when the data is older than 3 hours.
+- **Steps** (`6.2k`) and **battery** of watch and phone (the phone through a
+  complication).
+- **Next event** as a complication that can be reassigned.
+- **Tapping** opens Samsung Weather, Samsung Health or the complication's own
+  action.
+- **Four themes:** Tokyo Night, Catppuccin Mocha, Gruvbox Dark, Nord.
+- **Always-on display:** only time, date and week number on black, about 3 %
+  lit pixels.
+- **Language:** tile titles in English (`~/temp`, `~/rain`, `~/uv max`,
+  `~/steps`, `~/battery`, `> free`). Date (`06.10`), week number (`kw41`) and
+  weekday strip (`m d m d f s s`) keep their German format. The texts in the
+  watch's editor ("Theme", "Phone battery", "Next event") are English, with a
+  German translation for watches set to German.
 
-Technisch ist es ein [Watch Face Format](https://developer.android.com/training/wearables/wff)-Paket
-(Version 2): reine XML-Ressourcen, kein eigener Code auf der Uhr
+Technically it is a [Watch Face Format](https://developer.android.com/training/wearables/wff)
+package (version 2): XML resources only, no code of its own on the watch
 (`android:hasCode="false"`).
 
-## Der Proof of Concept
+## The proof of concept
 
-### Die Frage
+### The question
 
-Kann man ein echtes, auf der eigenen Uhr laufendes Wear-OS-Zifferblatt bauen,
-**ohne jemals einen Rechner einzuschalten**? Also ohne lokales Android-SDK,
-ohne Android Studio, ohne Emulator, ohne USB-Kabel, nur mit dem Handy als
-Bedienoberfläche?
+Can you build a real Wear OS watch face that runs on your own watch **without
+ever turning on a computer**? No local Android SDK, no Android Studio, no
+emulator, no USB cable, with the phone as the only user interface?
 
-### Die Regeln
+### The rules
 
-- Kein PC und kein Laptop, auch nicht zum Bauen, Signieren oder Installieren.
-- Alle Arbeit am Code machen KI-Agenten in Cloud-Sessions.
-- Der Mensch steuert vom Handy aus, testet auf der Uhr und entscheidet über das
-  Design.
-- Alles läuft über das Git-Repository. Was nicht im Repo steht, existiert nicht.
+- No PC or laptop, not even for building, signing or installing.
+- All work on the code is done by AI agents in cloud sessions.
+- The human steers from the phone, tests on the watch and makes the design
+  decisions.
+- Everything goes through the Git repository. What is not in the repo does not
+  exist.
 
-### Die Beteiligten
+### Who did what
 
-| Rolle | Wer/Was |
+| Role | Who/What |
 | --- | --- |
-| Auftraggeber, Tester, Designentscheidungen | Mensch mit Android-Handy und Galaxy Watch8 |
-| Konzept und Design | Brainstorming-Session mit einem KI-Assistenten, Ergebnis: [`docs/handover.md`](docs/handover.md) |
-| Umsetzung, Recherche, Tests, Doku | [Claude Code](https://claude.ai/code) in einer Cloud-Session (Container in der Cloud, gesteuert über die Claude-App auf dem Handy) |
-| Code-Review | OpenAI Codex (Cloud) am Pull Request |
-| Build-Maschine und Verteilung | GitHub Actions und GitHub Releases |
-| Installation auf die Uhr | [Bugjaeger Mobile ADB](https://play.google.com/store/apps/details?id=eu.sisik.hackendebug) auf dem Handy, ADB über WLAN |
+| Client, tester, design decisions | A human with an Android phone and a Galaxy Watch8 (the project ran in German) |
+| Concept and design | A brainstorming session with an AI assistant, resulting in [`docs/handover.md`](docs/handover.md) (German) |
+| Implementation, research, tests, docs | [Claude Code](https://claude.ai/code) in a cloud session (a container in the cloud, driven from the Claude app on the phone) |
+| Code review | OpenAI Codex (cloud) on the pull request |
+| Build machine and distribution | GitHub Actions and GitHub Releases |
+| Installation on the watch | [Bugjaeger Mobile ADB](https://play.google.com/store/apps/details?id=eu.sisik.hackendebug) on the phone, ADB over Wi-Fi |
 
-## Die Werkzeugkette
+## The tool chain
 
 ```mermaid
 flowchart LR
-    A[Handy<br/>Claude-App] -->|Auftrag, Screenshots,<br/>Entscheidungen| B[Claude Code<br/>Cloud-Container]
+    A[Phone<br/>Claude app] -->|task, screenshots,<br/>decisions| B[Claude Code<br/>cloud container]
     B -->|git push| C[GitHub]
-    C --> D[GitHub Actions<br/>Build, Validator,<br/>Memory, Audit, Tests]
-    D -->|Pre-Release 'testbuild'| E[Handy<br/>Browser-Download]
-    E --> F[Bugjaeger<br/>ADB über WLAN]
+    C --> D[GitHub Actions<br/>build, validator,<br/>memory, audit, tests]
+    D -->|pre-release 'testbuild'| E[Phone<br/>browser download]
+    E --> F[Bugjaeger<br/>ADB over Wi-Fi]
     F -->|adb install| G[Galaxy Watch]
-    G -->|Screenshot landet<br/>automatisch in der<br/>Handy-Galerie| A
-    C -->|Pull Request| H[Codex<br/>Code-Review]
+    G -->|screenshot lands<br/>in the phone's<br/>gallery automatically| A
+    C -->|pull request| H[Codex<br/>code review]
 ```
 
-Ein Testzyklus sieht so aus:
+One test cycle:
 
-1. **Claude Code** ändert das Zifferblatt im Cloud-Container, prüft lokal so
-   viel wie möglich und pusht.
-2. **GitHub Actions** baut die APK mit Gradle und prüft sie:
-   - offizieller XSD-Validator von Google,
-   - Memory-Footprint-Tool,
-   - Layout-Audit,
-   - Formel-Tests.
+1. **Claude Code** changes the watch face in the cloud container, checks as
+   much as it can locally and pushes.
+2. **GitHub Actions** builds the APK with Gradle and checks it:
+   - Google's official XSD validator,
+   - the memory footprint tool,
+   - the layout audit,
+   - the expression tests.
 
-   Danach veröffentlicht die CI die APK unter einer festen URL. Claude Code wartet
-   darauf, dass das Release-Tag auf den neuen Commit zeigt. Erst dann ist klar,
-   dass alle Prüfungen bestanden sind.
-3. **Auf dem Handy:** APK im Browser laden, in Bugjaeger auf die Uhr
-   installieren, Zifferblatt ansehen.
-4. **Auf der Uhr:** Screenshot mit Home- und Zurück-Taste. Samsung legt ihn
-   automatisch in der Handy-Galerie ab.
-5. **In der Claude-App:** Screenshot plus Beobachtungen hochladen, weiter bei 1.
+   The CI then publishes the APK at a fixed URL. Claude Code waits until the
+   release tag points at the new commit. Only then is it certain that every
+   check passed.
+3. **On the phone:** download the APK in the browser, install it on the watch
+   with Bugjaeger, look at the watch face.
+4. **On the watch:** take a screenshot with the Home and Back keys. Samsung puts
+   it into the phone's gallery automatically.
+5. **In the Claude app:** upload the screenshot with observations, back to 1.
 
-## Vorgehen
+## How it went
 
-Grundlage war ein Übergabedokument ([`docs/handover.md`](docs/handover.md)) aus
-einer vorherigen Brainstorming-Session. Es enthält:
-- das Layout mit Koordinaten,
-- ein Referenzbild als SVG ([`docs/reference.svg`](docs/reference.svg)),
-- die Datenquellen, Farbthemen und Leerzustände,
-- sechs offene Punkte und sieben Meilensteine.
+The starting point was a handover document ([`docs/handover.md`](docs/handover.md))
+from an earlier brainstorming session. It contains:
+- the layout with coordinates,
+- a reference image as SVG ([`docs/reference.svg`](docs/reference.svg)),
+- data sources, color themes and empty states,
+- six open questions and seven milestones.
 
-Das Dokument schreibt ausdrücklich vor, jeden Bezeichner gegen die offizielle
-Referenz zu prüfen, statt ihm zu vertrauen. Diese Vorgabe hat sich mehrfach
-ausgezahlt (siehe [unten](#was-nicht-ging-und-wie-es-gelöst-wurde)).
+The document explicitly requires checking every identifier against the
+official reference instead of trusting it. That paid off several times (see
+[below](#what-did-not-work-and-how-it-was-solved)).
 
-| Runde | Meilensteine | Inhalt | Ergebnis auf der Uhr |
+| Round | Milestones | Content | Result on the watch |
 | --- | --- | --- | --- |
-| 1 | M1, M2 | Projekt, Build-Pipeline, statisches Layout mit Beispieltexten | Pixelgenau, Grundlinien ±1 Einheit zur Berechnung |
-| 2 | M3–M5 | Echte Daten, Wetter, Complications, Tap-Aktionen | Alles funktioniert, ein Schönheitsfehler: Doppelpunkt nach der Terminzeit |
-| 3 | M6, M7 | Themen, Always-on-Display, echtes Vorschaubild | Themen und AOD funktionieren, Doppelpunkt noch da, AOD-Rahmen soll weg |
-| 4 | Fix | Doppelpunkt-Logik verallgemeinert, AOD-Rahmen entfernt | Bestätigt |
+| 1 | M1, M2 | Project, build pipeline, static layout with sample texts | Pixel-accurate, baselines within ±1 unit of the calculation |
+| 2 | M3–M5 | Live data, weather, complications, tap actions | Everything works, one cosmetic issue: a colon after the event time |
+| 3 | M6, M7 | Themes, always-on display, real preview image | Themes and AOD work, colon still there, AOD frame should go |
+| 4 | Fix | Generalized colon logic, AOD frame removed | Confirmed |
 
-Vier Testrunden auf der Uhr, verteilt auf zwei Tage. Jede Runde kostete den
-Menschen wenige Minuten: APK laden, installieren, Screenshot, kurze Rückmeldung.
-Das Handover sah einen Halt nach jedem Meilenstein vor. Für weniger Testrunden
-wurden später mehrere Meilensteine pro Runde gebündelt. Jede Abweichung vom
-Design wurde vorher abgefragt. Details je Meilenstein:
+Four test rounds on the watch over two days. Each round took the human a few
+minutes: download the APK, install, screenshot, short feedback. The handover
+asked for a stop after every milestone. To save test rounds, several
+milestones were later bundled into one round. Every deviation from the design
+was asked about first. Details per milestone, in German:
 [`docs/milestones.md`](docs/milestones.md).
 
-## Methoden
+## Methods
 
-### Erst die Referenz, dann der Code
+### Reference first, code second
 
-Für jeden Bezeichner gilt dieselbe Prüfreihenfolge:
-1. die XSD-Spezifikation aus [google/watchface](https://github.com/google/watchface),
-2. der Quellcode des offiziellen Validators,
-3. die Seiten auf developer.android.com,
-4. die offiziellen Beispiele.
+Every identifier is checked in the same order:
+1. the XSD specification from [google/watchface](https://github.com/google/watchface),
+2. the source code of the official validator,
+3. the pages on developer.android.com,
+4. the official samples.
 
-Die Recherche lief zum Teil parallel über einen Sub-Agenten, während der
-Haupt-Agent die Build-Umgebung aufsetzte.
+Part of the research ran in parallel in a sub-agent while the main agent set up
+the build environment.
 
-### Prüfen ohne Uhr und ohne Emulator
+### Testing without a watch or emulator
 
-Weil im Container kein Wear-OS-Emulator läuft (siehe unten), entstanden eigene
-Prüfwerkzeuge. Sie laufen bei jedem Push in der CI:
+Since no Wear OS emulator runs in the container (see below), dedicated checking
+tools were written. They run in CI on every push:
 
-| Werkzeug | Zweck |
+| Tool | Purpose |
 | --- | --- |
-| XSD-Validator (google/watchface) | Ist die XML gültiges WFF v2? Hat mehrere echte Fehler gefunden, bevor sie die Uhr erreichten. |
-| Memory-Footprint-Tool (google/watchface) | Speicherbudget wie bei der Play-Store-Prüfung |
-| `tools/render_preview.py` | Offline-Renderer für das Teilset von WFF, das dieses Zifferblatt nutzt (Formen, Text, Bedingungen, Transformationen, Complications, Themen, Ambient) |
-| `tools/wff_expr.py` | Auswerter für WFF-Ausdrücke, also dieselben Formeln, die auf der Uhr laufen |
-| `tools/audit.py` | Gestaltungsregeln aus dem Handover, siehe unten |
-| `tools/test_expressions.py` | Rechnet jede Formel mit Testwerten nach (74 Fälle), siehe unten |
+| XSD validator (google/watchface) | Is the XML valid WFF v2? Found several real mistakes before they reached the watch. |
+| Memory footprint tool (google/watchface) | Memory budget as in the Play Store review |
+| `tools/render_preview.py` | Offline renderer for the subset of WFF this watch face uses (shapes, text, conditions, transforms, complications, themes, ambient) |
+| `tools/wff_expr.py` | Evaluator for WFF expressions, the same formulas that run on the watch |
+| `tools/audit.py` | Design rules from the handover, see below |
+| `tools/test_expressions.py` | Recomputes every formula with test values (over 70 cases), see below |
 
-`tools/audit.py` prüft rund 500 Regeln aus dem Handover:
-- Kachel-Ecken mindestens 6 Einheiten vom Displayrand,
-- Text auf dem Display und in seiner Kachel,
-- nur JetBrains Mono, Schriftgröße mindestens 15, alles klein geschrieben,
-- nur Farben aus der Palette,
-- je Thema das Always-on-Display: Inhalt, schwarzer Grund, unter 15 % leuchtende
-  Pixel.
+`tools/audit.py` checks about 500 rules from the handover:
+- tile corners at least 6 units from the display edge,
+- text on the display and inside its tile,
+- only JetBrains Mono, font size at least 15, everything lower case,
+- only colors from the palette,
+- per theme, the always-on display: content, black background, under 15 % lit
+  pixels, and a theme icon that shows the theme.
 
-`tools/test_expressions.py` deckt unter anderem ab:
-- die ISO-Kalenderwoche für jeden Tag von 2000 bis 2040,
-- Fahrenheit-Umrechnung,
-- Leerzustände,
-- das Kürzen langer Termine,
-- die Doppelpunkt-Logik.
+`tools/test_expressions.py` covers, among other things:
+- the ISO week number for every day from 2000 to 2040,
+- Fahrenheit conversion,
+- empty states,
+- truncating long events,
+- the colon logic.
 
-Der Renderer ersetzt keinen echten Screenshot. Der erste Screenshot von der Uhr
-diente deshalb zum Kalibrieren: Er bestätigte das Modell für die Textposition
-auf ±1 Einheit, danach war der Renderer für Layout-Fragen verlässlich.
+The renderer does not replace a real screenshot. The first screenshot from the
+watch was used for calibration: it confirmed the text position model within
+±1 unit, and after that the renderer was reliable for layout questions.
 
-### Die CI als Build-Maschine und Verteiler
+### CI as build machine and distribution
 
-GitHub Actions übernimmt, was sonst ein Entwicklungsrechner täte: Android-SDK,
-Gradle-Build, Signieren und Prüfen. Die Verteilung läuft über ein rollendes
-Pre-Release mit fester URL. Ein fester Debug-Schlüssel im Repo
-(`keystore/debug.keystore`) sorgt dafür, dass jede neue APK die alte auf der Uhr
-überschreibt, ohne Deinstallieren und ohne dass das Zifferblatt neu gewählt
-werden muss.
+GitHub Actions does what a development machine would otherwise do: Android SDK,
+Gradle build, signing and checking. Distribution runs through a rolling
+pre-release with a fixed URL. A fixed debug key in the repo
+(`keystore/debug.keystore`) makes every new APK replace the old one on the
+watch, without uninstalling and without picking the watch face again.
 
-### Generierte XML statt Handarbeit, wo das Format zu eng ist
+### Generated XML where the format is too tight
 
-Das Layout liegt viermal in der XML, einmal pro Thema (Begründung unten). Damit
-das wartbar bleibt, ist die Quelle eine Vorlage mit Farbrollen
-(`watchface/watchface.template.xml`, `watchface/themes.json`). Zu lange Formeln
-erzeugt ein Generator (`tools/build_watchface.py`), zum Beispiel die
-`indexOf`-Ersatzsuche. Die CI prüft, dass die eingecheckte XML zur Vorlage passt.
+The layout exists four times in the XML, once per theme (reason below). To keep
+that maintainable, the source is a template with color roles
+(`watchface/watchface.template.xml`, `watchface/themes.json`). A generator
+(`tools/build_watchface.py`) also writes the formulas that are too long to
+maintain by hand, such as the `indexOf` replacement. CI checks that the
+committed XML matches the template.
 
-## Was nicht ging und wie es gelöst wurde
+## What did not work and how it was solved
 
-### Die Cloud-Umgebung
+### The cloud environment
 
-| Problem | Lösung |
+| Problem | Solution |
 | --- | --- |
-| `dl.google.com` war von der Netzwerk-Policy des Containers gesperrt. Damit gab es kein Android-SDK, kein Google Maven und kein Android Gradle Plugin, also keinen Gradle-Build im Container. | Der echte Build läuft in GitHub Actions. Für schnelle Proben im Container: `android.jar` aus dem öffentlichen Repo [Sable/android-platforms](https://github.com/Sable/android-platforms), `aapt2`, `zipalign` und `apksigner` aus den Ubuntu-Paketen, signiert mit dem festen Debug-Schlüssel. Das ist ein Notbau, aber er prüft, ob alle Ressourcen auflösen. |
-| Ubuntus `aapt2` ist alt und kann das Ressourcenformat der API-36-`android.jar` nicht lesen. | Für den Notbau die `android.jar` von API 34 verwenden. |
-| Der Build des Validators aus google/watchface braucht das Android Gradle Plugin, obwohl der Validator reines Java ist. | Eigene Mini-Gradle-Datei, die nur Maven Central braucht. Das Memory-Footprint-Tool hängt an Google-Maven-Artefakten und läuft deshalb nur in der CI. |
-| Kein KVM im Container, also kein Wear-OS-Emulator. | Eigener Offline-Renderer, Audit und Formel-Tests (siehe [Methoden](#methoden)), kalibriert mit dem ersten echten Screenshot. |
-| Keine Verbindung vom Container zur Uhr (`adb`). | Die Uhr hängt per ADB über WLAN am Handy (Bugjaeger). Geräteinfos wie `getprop` und `pm list packages` liefen in der Shell von Bugjaeger und kamen per Copy-and-paste zurück in den Chat. |
-| CI-Logs sind zu groß, um sie regelmäßig in den Agenten-Kontext zu laden. | Die Schritte laufen mit `pipefail`, der Schrittstatus ist also das Prüfergebnis. Ob ein Lauf komplett grün war, zeigt das Release-Tag: Es wird nur am Ende eines grünen Laufs auf den neuen Commit gesetzt. |
-| Das Repo war leer, es gab keinen `main` als Ziel für einen Pull Request. | `main` auf den ersten Commit (M1) gesetzt, der Pull Request enthält den Rest. |
+| The container's network policy blocked `dl.google.com`. That meant no Android SDK, no Google Maven and no Android Gradle Plugin, so no Gradle build in the container. | The real build runs in GitHub Actions. For quick checks in the container: `android.jar` from the public repo [Sable/android-platforms](https://github.com/Sable/android-platforms), `aapt2`, `zipalign` and `apksigner` from the Ubuntu packages, signed with the fixed debug key. It is a stopgap build, but it proves that all resources resolve. |
+| Ubuntu's `aapt2` is old and cannot read the resource format of the API 36 `android.jar`. | Use the API 34 `android.jar` for the stopgap build. |
+| Building the validator from google/watchface needs the Android Gradle Plugin, although the validator is plain Java. | A small Gradle file that only needs Maven Central. The memory footprint tool depends on Google Maven artifacts and therefore runs in CI only. |
+| No KVM in the container, so no Wear OS emulator. | Own offline renderer, audit and expression tests (see [Methods](#methods)), calibrated with the first real screenshot. |
+| No connection from the container to the watch (`adb`). | The watch is connected to the phone via ADB over Wi-Fi (Bugjaeger). Device information such as `getprop` and `pm list packages` ran in Bugjaeger's shell and came back to the chat via copy and paste. |
+| CI logs are too large to load into the agent's context regularly. | Steps run with `pipefail`, so the step status is the check result. The release tag shows whether a run was fully green: it only moves to the new commit at the end of a green run. |
+| The repo was empty, there was no `main` to target with a pull request. | `main` was created at the first commit (M1), the pull request holds the rest. |
 
-### Annahmen im Handover, die die Referenz widerlegt hat
+### Assumptions in the handover that the reference disproved
 
-| Annahme | Tatsache | Lösung |
+| Assumption | Fact | Solution |
 | --- | --- | --- |
-| Uhrzeitformat `HH:mm` | `TimeText` erlaubt nur kleines `h` | `hh:mm` mit `hourFormat="24"` |
-| `[WEEK_IN_YEAR]` liefert die ISO-Woche | Es ist `ALIGNED_WEEK_OF_YEAR` (Woche 1 = 1.–7. Januar), am 05.10.2026 also 40 statt 41 | ISO-Woche per Ausdruck aus `DAY_OF_YEAR`, `DAY_OF_WEEK` und `YEAR`, getestet für 41 Jahre |
-| Eine Farbkonfiguration mit vier Optionen à zehn Farben | Eine `ColorOption` fasst in **allen** WFF-Versionen höchstens fünf Farben | Nach Rückfrage: `ListConfiguration` „Thema“, das Layout liegt einmal pro Thema in der XML, erzeugt aus einer Vorlage |
-| Ein Tagesmaximum für UV ist nicht dokumentiert | Es gibt `WEATHER.DAYS.0.UV_INDEX` | Direkt verwendet, auf der Uhr mit der Samsung-Wetter-App abgeglichen |
-| Texte werden an der Grundlinie positioniert | `verticalAlign` gibt es in v2 nicht, Text wird in seiner Box vertikal zentriert | Boxen aus der Schriftmetrik berechnet: Grundlinie = Boxmitte + 0,36 × Schriftgröße |
+| Time format `HH:mm` | `TimeText` only allows a lower-case `h` | `hh:mm` with `hourFormat="24"` |
+| `[WEEK_IN_YEAR]` returns the ISO week | It is `ALIGNED_WEEK_OF_YEAR` (week 1 = January 1–7), so 40 instead of 41 on 2026-10-05 | ISO week computed by an expression from `DAY_OF_YEAR`, `DAY_OF_WEEK` and `YEAR`, tested for 41 years |
+| One color configuration with four options of ten colors each | A `ColorOption` holds at most five colors in **every** WFF version | After asking: a `ListConfiguration` "theme", with the layout once per theme in the XML, generated from a template |
+| A daily UV maximum is not documented | `WEATHER.DAYS.0.UV_INDEX` exists | Used directly, cross-checked on the watch against the Samsung Weather app |
+| Text is positioned by its baseline | `verticalAlign` does not exist in v2, text is centered vertically in its box | Boxes computed from the font metrics: baseline = box center + 0.36 × font size |
 
-### Grenzen des Watch Face Format
+### Limits of the Watch Face Format
 
-| Grenze | Umgehung |
+| Limit | Workaround |
 | --- | --- |
-| Die Schriftfarbe ist erst ab v4 per Ausdruck änderbar. Gebraucht wird sie für den hervorgehobenen Wochentag. | Gedämpfte Buchstaben als Grundebene, darüber ein Kästchen und ein Buchstabe, die per `Transform` an die Position des heutigen Tags wandern |
-| Es gibt keine String-Verkettung und kein `indexOf`. | Templates mit mehreren Parametern, `subText` mit geklemmten Indizes und verschachtelte Ternär-Ausdrücke, erzeugt vom Generator |
-| `numberFormat` mit Dezimalstelle würde auf einer deutschen Uhr ein Komma setzen (`6,2k`). | Nur ganze Zahlen formatieren, den Punkt fest ins Template schreiben |
+| The font color can only be changed by an expression from v4 on. It is needed for the highlighted weekday. | Muted letters as the base layer, with a box and a letter on top that move to today's position via `Transform` |
+| There is no string concatenation and no `indexOf`. | Templates with several parameters, `subText` with clamped indices and nested ternary expressions, written by the generator |
+| `numberFormat` with a decimal place would print a comma on a German watch (`6,2k`). | Format whole numbers only and put the dot into the template |
 
-### Überraschungen auf der echten Uhr
+### Surprises on the real watch
 
-| Beobachtung | Lösung |
+| Observation | Solution |
 | --- | --- |
-| Samsungs Terminquelle liefert `<Zeit>: <Titel>`, also `> 14:00: …`. Der erste Fix erkannte nur `HH:MM:`, die Uhr zeigte aber auch relative Zeiten (`27 min.:`). | Zweiter Anlauf: Suche nach dem ersten `": "` in den ersten 16 Zeichen, unabhängig vom Zeitformat. Nach dem Codex-Review nur noch, wenn der Text mit einer Ziffer beginnt (siehe unten) |
-| Die Themen ließen sich scheinbar nicht auswählen. | Bedienfrage, kein Fehler: Im Samsung-Editor wechselt man Optionen durch Wischen bzw. Drehen, nicht durch Antippen |
-| Der orange Systempunkt für Benachrichtigungen erschien im Screenshot. | Gehört zu One UI Watch, nicht zum Zifferblatt. Für `preview.png` übermalt |
+| Samsung's calendar source sends `<time>: <title>`, so `> 14:00: …`. The first fix only recognized `HH:MM:`, but the watch also showed relative times (`27 min.:`). | Second attempt: look for the first `": "` within the first 16 characters, whatever the time format. After the Codex review only when the text starts with a digit (see below) |
+| The themes seemed impossible to select. | A usage question, not a bug: in Samsung's editor you change options by swiping or rotating, not by tapping |
+| The orange system dot for notifications appeared in the screenshot. | It belongs to One UI Watch, not to the watch face. Painted over for `preview.png` |
 
-### Eigene Fehler, die die Prüfungen gefangen haben
+### Own mistakes caught by the checks
 
-- `name`-Attribut an `DigitalClock` ist ungültig. Der Validator hat es gefunden.
-- `--` in einem XML-Kommentar ist verboten. Der Validator hat es gefunden.
-- Die CI hätte einen fehlgeschlagenen Prüfschritt hinter `| tee log` verschluckt,
-  weil GitHub ohne explizites `shell: bash` ohne `pipefail` läuft. Das fiel im
-  Selbst-Audit auf, nach dem ersten Lauf. Der erste CI-Lauf hat seine Prüfungen
-  also nicht wirklich bewiesen, erst der zweite.
+- A `name` attribute on `DigitalClock` is invalid. The validator found it.
+- `--` inside an XML comment is not allowed. The validator found it.
+- CI would have swallowed a failing check behind `| tee log`, because GitHub
+  runs without `pipefail` unless `shell: bash` is set explicitly. This came up
+  in a self-audit after the first run. So the first CI run did not really prove
+  its checks, only the second one did.
+- The first implementation of the second Codex finding would have produced an
+  empty icon for a new theme, because the icons were rendered from the old XML.
+  The dry run only checked that the file existed. It came up while switching to
+  English tile titles, when the icons still showed the old titles. Since then
+  `make icons` generates the XML first, and the audit checks the background of
+  every icon.
 
-## Code-Review durch Codex
+## Code review by Codex
 
-Den Pull Request hat OpenAI Codex in einer eigenen Cloud-Session geprüft.
+OpenAI Codex reviewed the pull request in a separate cloud session.
 
-Codex hat die Offline-Prüfungen selbst nachgefahren:
-- Generator-Check,
-- Formel-Tests,
-- Audit.
+Codex re-ran the offline checks itself:
+- generator check,
+- expression tests,
+- audit.
 
-Android-Build, offizieller Validator und echte Uhr waren in der Review-Session
-nicht verfügbar.
+The Android build, the official validator and a real watch were not available
+in the review session.
 
-Zwei nicht blockierende Befunde, beide umgesetzt:
+Two non-blocking findings, both addressed:
 
-| Befund | Umsetzung |
+| Finding | Change |
 | --- | --- |
-| Die Doppelpunkt-Bereinigung traf auch Texte ohne Zeitangabe: `Abgesagt: Kino` wurde zu `abgesagt kino`. Das betrifft auch andere Datenquellen, die man dem Feld zuweisen kann. | Bereinigt wird nur noch, wenn Titel bzw. Text mit einer Ziffer beginnt, also bei `14:00` oder `27 min.`. Regressionstests für normale Titel mit Doppelpunkt ergänzt. |
-| Die Anleitung für ein fünftes Thema war unvollständig: Icons entstanden nur für vier Themen, die Namens-Strings fehlten. | `make icons` und `make preview` lesen die Themen aus `themes.json`. Der Generator erzeugt die Namens-Strings (`res/values/theme_strings.xml`) und bricht ab, wenn ein Icon fehlt. In einer Kopie des Repos mit einem fünften Thema durchgespielt. |
+| The colon cleanup also hit texts without a time: `Abgesagt: Kino` became `abgesagt kino`. This also affects other data sources that can be assigned to the slot. | The cleanup only applies when the title or text starts with a digit, i.e. `14:00` or `27 min.`. Regression tests for normal titles containing a colon were added. |
+| The instructions for a fifth theme were incomplete: icons were only made for four themes, and the name strings were missing. | `make icons` generates the XML first and then renders one icon per theme from `themes.json`. The generator writes the name strings (`res/values/theme_strings.xml`). The CI check reports missing icons, the audit checks their content. Tried out with a fifth theme in a copy of the repo. |
 
-Die beiden Agenten haben sich ergänzt. Codex fand Randfälle in der Logik und
-der Doku. Claude Code hatte die Prüfwerkzeuge geschrieben, mit denen Codex das
-nachvollziehen konnte.
+The two agents complemented each other. Codex found edge cases in the logic and
+the docs. Claude Code had written the checking tools that let Codex verify
+them.
 
-## Bilanz
+## Results
 
-- **Ergebnis:** Alle sieben Meilensteine des Handovers sind umgesetzt und auf
-  einer Galaxy Watch8 (Wear OS 6) bestätigt. Alle sechs offenen Punkte sind
-  geklärt.
-- **Aufwand für den Menschen:**
-  - ein Handover-Dokument,
-  - vier Testrunden auf der Uhr,
-  - eine Designentscheidung (die Themen-Lösung),
-  - ein Code-Review durch einen zweiten Agenten,
-  - ein paar kurze Rückmeldungen.
-- **PC eingeschaltet:** nie.
-- **Was den Ansatz trägt:**
-  - das Handover als verbindliche Vorgabe mit Referenzbild,
-  - Prüfen gegen Referenz und Validator statt Raten,
-  - ein Offline-Renderer, der mit dem ersten echten Screenshot kalibriert wurde,
-  - eine CI, die zugleich Build-Maschine und Verteiler ist.
-- **Wo es hakt:**
-  - Was sich nur auf echter Hardware zeigt, kostet eine Testrunde, etwa wie
-    Samsungs Datenquellen ihre Texte formatieren.
-  - Die Netzwerk-Policy der Cloud-Umgebung kann zentrale Hosts sperren. Hier
-    war es `dl.google.com`.
+- **Outcome:** all seven milestones of the handover are implemented and
+  confirmed on a Galaxy Watch8 (Wear OS 6). All six open questions are
+  resolved.
+- **Effort for the human:**
+  - one handover document,
+  - four test rounds on the watch,
+  - one design decision (the theme solution),
+  - one code review by a second agent,
+  - a few short pieces of feedback.
+- **PC turned on:** never.
+- **What makes the approach work:**
+  - the handover as a binding specification with a reference image,
+  - checking against the reference and the validator instead of guessing,
+  - an offline renderer calibrated with the first real screenshot,
+  - a CI that is both build machine and distribution channel.
+- **Where it gets stuck:**
+  - Anything that only shows on real hardware costs a test round, for example
+    how Samsung's data sources format their texts.
+  - The cloud environment's network policy can block central hosts. Here it was
+    `dl.google.com`.
 
-### Vor einer Veröffentlichung offen
+### Open before publishing
 
-- Lizenz für den eigenen Code festlegen. Die Schrift steht unter der OFL, siehe
+- Choose a license for the code. The font is under the OFL, see
   `docs/OFL-JetBrainsMono.txt`.
-- Für den Play Store: Release-Signatur statt Debug-Schlüssel und eine eigene
-  Paket-ID.
+- For the Play Store: a release signature instead of the debug key and a
+  package ID of your own.
 
 ---
 
-## Testen nur mit Handy und Uhr
+## Testing with just a phone and a watch
 
-Jeder Push baut in GitHub Actions die APK, prüft sie und legt sie als
-Pre-Release **testbuild** ab:
+Every push builds the APK in GitHub Actions, checks it and publishes it as the
+pre-release **testbuild**:
 
-- Release-Seite: <https://github.com/Syztie/HyprlandWatchface/releases/tag/testbuild>
-- APK direkt: <https://github.com/Syztie/HyprlandWatchface/releases/download/testbuild/hyprland-watchface.apk>
+- Release page: <https://github.com/Syztie/HyprlandWatchface/releases/tag/testbuild>
+- APK directly: <https://github.com/Syztie/HyprlandWatchface/releases/download/testbuild/hyprland-watchface.apk>
 
-### Einmalig einrichten
+### One-time setup
 
-1. **Uhr:** Einstellungen → Info zur Uhr → Software-Info → *Softwareversion*
-   7× antippen. Danach unter Einstellungen → Entwickleroptionen
-   *ADB-Debugging* und *Kabelloses Debugging* einschalten. Uhr und Handy
-   müssen im selben WLAN sein.
-2. **Handy:** [Bugjaeger Mobile ADB](https://play.google.com/store/apps/details?id=eu.sisik.hackendebug)
-   installieren (ADB auf dem Handy, kein PC nötig).
-3. **Koppeln:**
-   1. Auf der Uhr unter *Kabelloses Debugging* → *Neues Gerät koppeln*.
-   2. In Bugjaeger *Pair device* wählen und IP, Port und Kopplungscode von der
-      Uhr eintippen.
-   3. Danach in Bugjaeger mit der IP und dem Port verbinden, die die Uhr unter
-      *Kabelloses Debugging* anzeigt. Das ist ein anderer Port als beim Koppeln.
+1. **Watch:** Settings → About watch → Software information → tap *Software
+   version* 7 times. Then turn on *ADB debugging* and *Wireless debugging* under
+   Settings → Developer options. Watch and phone must be on the same Wi-Fi.
+2. **Phone:** install [Bugjaeger Mobile ADB](https://play.google.com/store/apps/details?id=eu.sisik.hackendebug)
+   (ADB on the phone, no PC needed).
+3. **Pair:**
+   1. On the watch, go to *Wireless debugging* → *Pair new device*.
+   2. In Bugjaeger, choose *Pair device* and enter the IP, port and pairing
+      code shown on the watch.
+   3. Then connect in Bugjaeger to the IP and port the watch shows under
+      *Wireless debugging*. That port differs from the pairing port.
 
-### Jeder Testlauf
+### Every test run
 
-1. APK über den Link oben auf dem Handy herunterladen.
-2. In Bugjaeger mit der Uhr verbinden → Paket-Symbol (*Install APK*) → die
-   heruntergeladene `hyprland-watchface.apk` wählen.
-3. Auf der Uhr das Zifferblatt lange gedrückt halten und nach rechts wischen,
-   bis **Hyprland** erscheint (sonst über *+ Hinzufügen*). Dann antippen.
-4. **Screenshot:** Home- und Zurück-Taste der Uhr gleichzeitig drücken. Das Bild
-   landet automatisch in der Galerie des Handys (Album *Watch*). Alternativ in
-   Bugjaeger *Screenshot*.
+1. Download the APK on the phone from the link above.
+2. Connect to the watch in Bugjaeger → package icon (*Install APK*) → choose
+   the downloaded `hyprland-watchface.apk`.
+3. On the watch, long-press the watch face and swipe right until **Hyprland**
+   appears (otherwise via *+ Add*). Then tap it.
+4. **Screenshot:** press the watch's Home and Back keys at the same time. The
+   image lands in the phone's gallery automatically (album *Watch*).
+   Alternatively use *Screenshot* in Bugjaeger.
 
-Shell-Befehle wie `getprop` oder `pm list packages` laufen in Bugjaeger unter
+Shell commands such as `getprop` or `pm list packages` run in Bugjaeger under
 *Shell*.
 
-### Themen umschalten
+### Switching themes
 
-Zifferblatt lange drücken → *Anpassen* → *Thema*. Dann nach oben/unten wischen
-oder am Rand drehen, Antippen wählt nicht aus. In der Galaxy-Wearable-App
-erscheinen die Themen zusätzlich als Voreinstellungen (Flavors).
+Long-press the watch face → *Customize* → *Theme*. Then swipe up/down or rotate
+the bezel; tapping does not select. In the Galaxy Wearable app the themes also
+appear as presets (flavors).
 
-### Complication-Felder zuweisen
+### Assigning the complication slots
 
-Zifferblatt lange drücken → *Anpassen* → zu den Komplikationen wischen → Feld
-antippen.
+Long-press the watch face → *Customize* → swipe to the complications → tap a
+slot.
 
-| Feld | Inhalt | Standard |
+| Slot | Content | Default |
 | --- | --- | --- |
-| Handy-Akku (neben dem Handy-Symbol in `~/akku`) | Akkustand des Handys | leer, zeigt `--` |
-| Nächster Termin (unterste Zeile) | beliebige Quelle mit Text | nächster Kalendertermin |
+| *Phone battery* (next to the phone icon in `~/battery`) | The phone's battery level | empty, shows `--` |
+| *Next event* (bottom line) | Any source that provides text | next calendar event, `> free` without one |
 
-Für den Handy-Akku brauchst du eine Zusatz-App, die ihn als Complication
-anbietet, z. B. [Phone Battery Complication](https://play.google.com/store/apps/details?id=com.weartools.phonebattcomp)
-(auf Handy und Uhr installieren). Danach erscheint sie in der Auswahl des Felds.
+The phone battery needs an additional app that offers it as a complication,
+for example [Phone Battery Complication](https://play.google.com/store/apps/details?id=com.weartools.phonebattcomp)
+(install on both phone and watch). It then appears in the slot's picker.
 
-## Projektaufbau
+## Project layout
 
-| Pfad | Inhalt |
+| Path | Content |
 | --- | --- |
-| `watchface/watchface.template.xml` | **Quelle** des Zifferblatts (Koordinatenraum 450 × 450), Farben als `@{rolle}` |
-| `watchface/themes.json` | Die zehn Farbrollen und die vier Themen (Name, Farben) |
-| `app/src/main/res/raw/watchface.xml`, `app/src/main/res/values/theme_strings.xml` | Daraus erzeugt (`make generate`), nicht von Hand bearbeiten |
-| `app/src/main/res/xml/watch_face_info.xml` | Vorschau, Editierbarkeit, Flavors |
-| `app/src/main/res/font/` | JetBrains Mono Regular und Medium (OFL, siehe `docs/OFL-JetBrainsMono.txt`) |
-| `app/src/main/res/drawable/` | `preview.png` (echter Screenshot), Themen-Icons |
-| `docs/handover.md` | Das ursprüngliche Übergabedokument (Auftrag) |
-| `docs/reference.svg` | Verbindliches Referenzbild |
-| `docs/milestones.md` | Stand je Meilenstein, geprüfte Fakten, Abweichungen |
-| `tools/` | Generator, Validator-Setup, Offline-Renderer, Audit, Formel-Tests |
-| `.github/workflows/build.yml` | CI: Build, Prüfungen, Pre-Release `testbuild` |
-| `keystore/debug.keystore` | Fester Debug-Schlüssel, damit Builds sich gegenseitig überschreiben können |
+| `watchface/watchface.template.xml` | **Source** of the watch face (450 × 450 coordinate space), colors written as `@{role}` |
+| `watchface/themes.json` | The ten color roles and the four themes (name, colors) |
+| `app/src/main/res/raw/watchface.xml`, `app/src/main/res/values/theme_strings.xml` | Generated from those (`make generate`), do not edit by hand |
+| `app/src/main/res/xml/watch_face_info.xml` | Preview, editability, flavors |
+| `app/src/main/res/font/` | JetBrains Mono Regular and Medium (OFL, see `docs/OFL-JetBrainsMono.txt`) |
+| `app/src/main/res/drawable/` | `preview.png` (real screenshot), theme icons |
+| `app/src/main/res/values/`, `values-de/` | Texts for the watch's editor, English by default, German as translation |
+| `docs/handover.md` | The original handover document (the brief, in German) |
+| `docs/reference.svg` | Binding reference image |
+| `docs/milestones.md` | Work log per milestone, verified facts, deviations (in German) |
+| `README.md`, `README.de.md` | This documentation in English and German, `tools/check_readmes.py` keeps both structured the same |
+| `tools/` | Generator, validator setup, offline renderer, audit, expression tests, README check |
+| `.github/workflows/build.yml` | CI: build, checks, pre-release `testbuild` |
+| `keystore/debug.keystore` | Fixed debug key, so builds can replace each other |
 
-### Themen
+### Themes
 
-Eine Farboption im Watch Face Format fasst höchstens fünf Farben, das Design
-braucht zehn Rollen. Deshalb ist das Thema eine Listen-Auswahl.
-`tools/build_watchface.py` schreibt jeden `<ThemeSwitch>`-Block der Vorlage
-einmal pro Thema mit festen Farben in die XML.
+A color option in the Watch Face Format holds at most five colors, the design
+needs ten roles. So the theme is a list option. `tools/build_watchface.py`
+writes every `<ThemeSwitch>` block of the template into the XML once per theme,
+with fixed colors.
 
-Für neue Farben oder ein weiteres Thema in `watchface/themes.json` einen Eintrag
-mit `id`, `name` und zehn Farben in der Reihenfolge von `roles` anlegen. Dann
-`make icons generate` ausführen. Das erzeugt:
-- das Icon,
-- den Anzeigenamen (`res/values/theme_strings.xml`),
-- die Listen-Option,
-- den Flavor,
-- die Kopie des Layouts.
+For new colors or another theme, add an entry to `watchface/themes.json` with
+`id`, `name` and ten colors in the order of `roles`. Then run `make icons`.
+That generates:
+- the icon,
+- the display name (`res/values/theme_strings.xml`),
+- the list option,
+- the flavor,
+- the copy of the layout.
 
-## Entwicklung am Rechner (optional)
+## Development on a computer (optional)
 
-Der Proof of Concept kommt ohne PC aus, das Projekt baut aber auch klassisch
-(getestet ist der Weg über die CI auf Ubuntu).
+The proof of concept needs no PC, but the project also builds the classic way
+(the tested path is CI on Ubuntu).
 
-Voraussetzungen:
+Requirements:
 - JDK 17
-- Android-SDK (`sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"`)
-- Python 3 mit Pillow (für Generator-Prüfung, Vorschau und Audit)
+- Android SDK (`sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"`)
+- Python 3 with Pillow (for the generator check, previews and audit)
 
 ```sh
-make generate     # res/raw/watchface.xml aus watchface/ erzeugen
+make generate     # generate res/raw/watchface.xml from watchface/
 make build        # ./gradlew :app:assembleDebug
-make validate     # Generator aktuell?, XSD-Validator (WFF v2), Memory-Footprint, Audit, Formel-Tests
-make install      # adb install -r … (Uhr per adb über WLAN verbunden)
+make validate     # generator up to date?, XSD validator (WFF v2), memory footprint, audit, expression tests, README check
+make install      # adb install -r … (watch connected via adb over Wi-Fi)
 make screenshot   # adb exec-out screencap -p > screenshots/…
-make preview      # Offline-Vorschau aller Themen, aktiv und Ambient, nach build/preview/
-make icons        # Themen-Icons für die Auswahl neu rendern
+make preview      # offline previews of all themes, active and ambient, into build/preview/
+make icons        # generate the XML, then re-render the theme icons
+make docs         # README.md and README.de.md structured the same, links valid
 ```
 
-Uhr per WLAN verbinden: auf der Uhr *Kabelloses Debugging* → *Neues Gerät
-koppeln*, dann `adb pair IP:PORT` mit dem Code und `adb connect IP:PORT`.
+To connect the watch over Wi-Fi: on the watch, *Wireless debugging* → *Pair new
+device*, then `adb pair IP:PORT` with the code and `adb connect IP:PORT`.
 
-`make tools` baut den offiziellen XML-Validator und das Memory-Footprint-Tool
-aus [google/watchface](https://github.com/google/watchface) (fester Commit) nach
-`tools/bin/`.
+`make tools` builds the official XML validator and the memory footprint tool
+from [google/watchface](https://github.com/google/watchface) (pinned commit)
+into `tools/bin/`.

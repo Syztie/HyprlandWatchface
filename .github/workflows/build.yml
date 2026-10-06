@@ -34,6 +34,9 @@ jobs:
       - name: Generated watchface.xml is up to date
         run: make check-generated
 
+      - name: README.md and README.de.md in step
+        run: make docs
+
       - name: Build debug APK
         run: >
           ./gradlew :app:assembleDebug
