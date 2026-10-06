@@ -24,7 +24,8 @@ Version 2, rein deklarativ (`android:hasCode="false"`).
 ## Themen und Always-on-Display
 
 Vier Themen: Tokyo Night (Standard), Catppuccin Mocha, Gruvbox Dark, Nord.
-Umschalten auf der Uhr: Zifferblatt lange drücken → *Anpassen* → *Thema*. In
+Umschalten auf der Uhr: Zifferblatt lange drücken → *Anpassen* → *Thema*, dann
+nach oben/unten wischen oder am Rand drehen (Antippen wählt nicht aus). In
 der Galaxy-Wearable-App erscheinen die Themen zusätzlich als Voreinstellungen
 (Flavors).
 

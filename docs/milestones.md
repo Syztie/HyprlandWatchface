@@ -1,6 +1,6 @@
 # Meilensteine, Abweichungen, offene Punkte
 
-Stand: 06.10.2026 (M1–M7 umgesetzt; offen: Themenwahl auf der Uhr)
+Stand: 06.10.2026 (M1–M7 umgesetzt und auf der Uhr bestätigt)
 
 ## Geprüfte Fakten aus der Referenz
 
@@ -169,8 +169,8 @@ wie kein Titel. Bekannte Grenze: Ein Termin ohne Zeitangabe, dessen Titel selbst
 früh ein `": "` enthält, verliert diesen Doppelpunkt.
 
 Auf der Uhr bestätigt (06.10.): Doppelpunkt-Fix und Always-on-Display ohne
-Rahmen. Offen: Die Themen erscheinen unter *Anpassen*, ließen sich beim ersten
-Test aber nicht auswählen (vermutlich Bedienung: wischen/drehen statt tippen).
+Rahmen. Themenwechsel unter *Anpassen* → *Thema* funktioniert (wischen bzw.
+drehen, nicht tippen).
 
 ## M7 Abschluss
 
