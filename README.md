@@ -11,9 +11,9 @@ turning on a PC. Planning, code, builds, tests, code review and installation on
 the watch ran entirely through cloud sessions of AI agents, GitHub, an Android
 phone and the watch itself.
 
-| On the watch (Galaxy Watch8, milestone 2, still with German tile titles) | All themes, active on top, always-on display below (offline render) |
+| On the watch (Galaxy Watch8) | All themes, active on top, always-on display below (offline render) |
 | --- | --- |
-| ![Screenshot from the watch](docs/images/watch-m2.png) | ![Themes](docs/images/themes.png) |
+| ![Screenshot from the watch](docs/images/watch.png) | ![Themes](docs/images/themes.png) |
 
 Contents: [The watch face](#the-watch-face) ·
 [The proof of concept](#the-proof-of-concept) ·
@@ -130,8 +130,9 @@ official reference instead of trusting it. That paid off several times (see
 | 2 | M3–M5 | Live data, weather, complications, tap actions | Everything works, one cosmetic issue: a colon after the event time |
 | 3 | M6, M7 | Themes, always-on display, real preview image | Themes and AOD work, colon still there, AOD frame should go |
 | 4 | Fix | Generalized colon logic, AOD frame removed | Confirmed |
+| 5 | Polish | English tile titles and editor texts after the Codex review | Confirmed, screenshot became `preview.png` |
 
-Four test rounds on the watch over two days. Each round took the human a few
+Five test rounds on the watch over two days. Each round took the human a few
 minutes: download the APK, install, screenshot, short feedback. The handover
 asked for a stop after every milestone. To save test rounds, several
 milestones were later bundled into one round. Every deviation from the design
@@ -239,7 +240,7 @@ committed XML matches the template.
 | --- | --- |
 | Samsung's calendar source sends `<time>: <title>`, so `> 14:00: …`. The first fix only recognized `HH:MM:`, but the watch also showed relative times (`27 min.:`). | Second attempt: look for the first `": "` within the first 16 characters, whatever the time format. After the Codex review only when the text starts with a digit (see below) |
 | The themes seemed impossible to select. | A usage question, not a bug: in Samsung's editor you change options by swiping or rotating, not by tapping |
-| The orange system dot for notifications appeared in the screenshot. | It belongs to One UI Watch, not to the watch face. Painted over for `preview.png` |
+| The orange system dot for notifications appeared in the screenshot. | It belongs to One UI Watch, not to the watch face. Painted over in the first `preview.png` |
 
 ### Own mistakes caught by the checks
 
@@ -286,7 +287,7 @@ them.
   resolved.
 - **Effort for the human:**
   - one handover document,
-  - four test rounds on the watch,
+  - five test rounds on the watch,
   - one design decision (the theme solution),
   - one code review by a second agent,
   - a few short pieces of feedback.

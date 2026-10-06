@@ -11,9 +11,9 @@ dass ein PC eingeschaltet wurde. Planung, Code, Builds, Tests, Code-Review und
 die Installation auf der eigenen Uhr liefen ausschließlich über Cloud-Sessions
 von KI-Agenten, GitHub, ein Android-Handy und die Uhr selbst.
 
-| Auf der Uhr (Galaxy Watch8, Stand M2, noch mit deutschen Kacheltiteln) | Alle Themen, oben aktiv, unten Always-on-Display (Offline-Render) |
+| Auf der Uhr (Galaxy Watch8) | Alle Themen, oben aktiv, unten Always-on-Display (Offline-Render) |
 | --- | --- |
-| ![Screenshot von der Uhr](docs/images/watch-m2.png) | ![Themen](docs/images/themes.png) |
+| ![Screenshot von der Uhr](docs/images/watch.png) | ![Themen](docs/images/themes.png) |
 
 Inhalt: [Das Zifferblatt](#das-zifferblatt) ·
 [Der Proof of Concept](#der-proof-of-concept) ·
@@ -130,8 +130,9 @@ ausgezahlt (siehe [unten](#was-nicht-ging-und-wie-es-gelöst-wurde)).
 | 2 | M3–M5 | Echte Daten, Wetter, Complications, Tap-Aktionen | Alles funktioniert, ein Schönheitsfehler: Doppelpunkt nach der Terminzeit |
 | 3 | M6, M7 | Themen, Always-on-Display, echtes Vorschaubild | Themen und AOD funktionieren, Doppelpunkt noch da, AOD-Rahmen soll weg |
 | 4 | Fix | Doppelpunkt-Logik verallgemeinert, AOD-Rahmen entfernt | Bestätigt |
+| 5 | Feinschliff | Englische Kacheltitel und Editor-Texte nach dem Codex-Review | Bestätigt, der Screenshot wurde zu `preview.png` |
 
-Vier Testrunden auf der Uhr, verteilt auf zwei Tage. Jede Runde kostete den
+Fünf Testrunden auf der Uhr, verteilt auf zwei Tage. Jede Runde kostete den
 Menschen wenige Minuten: APK laden, installieren, Screenshot, kurze Rückmeldung.
 Das Handover sah einen Halt nach jedem Meilenstein vor. Für weniger Testrunden
 wurden später mehrere Meilensteine pro Runde gebündelt. Jede Abweichung vom
@@ -239,7 +240,7 @@ erzeugt ein Generator (`tools/build_watchface.py`), zum Beispiel die
 | --- | --- |
 | Samsungs Terminquelle liefert `<Zeit>: <Titel>`, also `> 14:00: …`. Der erste Fix erkannte nur `HH:MM:`, die Uhr zeigte aber auch relative Zeiten (`27 min.:`). | Zweiter Anlauf: Suche nach dem ersten `": "` in den ersten 16 Zeichen, unabhängig vom Zeitformat. Nach dem Codex-Review nur noch, wenn der Text mit einer Ziffer beginnt (siehe unten) |
 | Die Themen ließen sich scheinbar nicht auswählen. | Bedienfrage, kein Fehler: Im Samsung-Editor wechselt man Optionen durch Wischen bzw. Drehen, nicht durch Antippen |
-| Der orange Systempunkt für Benachrichtigungen erschien im Screenshot. | Gehört zu One UI Watch, nicht zum Zifferblatt. Für `preview.png` übermalt |
+| Der orange Systempunkt für Benachrichtigungen erschien im Screenshot. | Gehört zu One UI Watch, nicht zum Zifferblatt. Im ersten `preview.png` übermalt |
 
 ### Eigene Fehler, die die Prüfungen gefangen haben
 
@@ -286,7 +287,7 @@ nachvollziehen konnte.
   geklärt.
 - **Aufwand für den Menschen:**
   - ein Handover-Dokument,
-  - vier Testrunden auf der Uhr,
+  - fünf Testrunden auf der Uhr,
   - eine Designentscheidung (die Themen-Lösung),
   - ein Code-Review durch einen zweiten Agenten,
   - ein paar kurze Rückmeldungen.

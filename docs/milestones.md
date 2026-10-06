@@ -193,8 +193,8 @@ drehen, nicht tippen).
 - Nachbesserung zum zweiten Codex-Befund: `make icons` erzeugt zuerst die XML,
   sonst bekäme ein neues Thema ein leeres Icon. Das Audit prüft jetzt den
   Hintergrund jedes Icons.
-- `preview.png` zeigt noch die deutschen Titel aus M2 und wird durch einen neuen
-  Screenshot ersetzt.
+- Auf der Uhr bestätigt (06.10.). Der Screenshot ist jetzt `preview.png` und das
+  Bild oben in den READMEs.
 
 ## Offene Punkte
 
