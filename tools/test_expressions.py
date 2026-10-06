@@ -140,7 +140,7 @@ def main():
         ("text only", {"type": "LONG_TEXT", "TEXT": "Team Meeting"}, "> team meeting"),
         ("long text", {"type": "LONG_TEXT", "TITLE": "15:00", "TEXT": "Quartalsplanung mit allen"},
          "> 15:00 quartalsplanu…"),
-        ("empty", None, "> frei"),
+        ("empty", None, "> free"),
         ("colon in title", {"type": "LONG_TEXT", "TITLE": "14:00:", "TEXT": "Abgesagt: Kino"},
          "> 14:00 abgesagt: kino"),
         ("colon in text", {"type": "LONG_TEXT", "TEXT": "14:00: Abgesagt: Kino"}, "> 14:00 abgesagt: kino"),

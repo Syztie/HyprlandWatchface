@@ -132,9 +132,12 @@ def check_themes(cfg):
     for t in cfg["themes"]:
         if len(t["colors"]) != len(cfg["roles"]):
             raise SystemExit(f"theme {t['id']}: {len(t['colors'])} colors, expected {len(cfg['roles'])}")
-        icon = os.path.join(RES, "drawable", f"theme_{t['id']}.png")
-        if not os.path.exists(icon):
-            raise SystemExit(f"theme {t['id']}: icon {os.path.relpath(icon, ROOT)} missing, run 'make icons'")
+
+
+def missing_icons(cfg):
+    """Icons are rendered from the generated XML, so they are checked, not required, here."""
+    paths = [os.path.join(RES, "drawable", f"theme_{t['id']}.png") for t in cfg["themes"]]
+    return [p for p in paths if not os.path.exists(p)]
 
 
 def generate():
@@ -162,7 +165,10 @@ def main():
                  if not os.path.exists(p) or open(p).read() != text]
         for p in stale:
             print(f"{os.path.relpath(p, ROOT)} is out of date: run 'make generate'")
-        if stale:
+        missing = missing_icons(json.load(open(THEMES)))
+        for p in missing:
+            print(f"{os.path.relpath(p, ROOT)} is missing: run 'make icons'")
+        if stale or missing:
             sys.exit(1)
         print("generated files are up to date")
         return

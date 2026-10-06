@@ -137,7 +137,7 @@
                 <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff565f89">~/temp</Font></Text>
               </PartText>
               <PartText name="rain_title" x="175" y="222" width="105" height="25">
-                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff565f89">~/regen</Font></Text>
+                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff565f89">~/rain</Font></Text>
               </PartText>
               <PartText name="uv_title" x="307" y="222" width="105" height="25">
                 <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff565f89">~/uv max</Font></Text>
@@ -221,7 +221,7 @@
                 </RoundRectangle>
               </PartDraw>
               <PartText name="steps_title" x="69" y="307" width="118" height="25">
-                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff565f89">~/schritte</Font></Text>
+                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff565f89">~/steps</Font></Text>
               </PartText>
               <Condition>
                 <Expressions>
@@ -268,7 +268,7 @@
                 </RoundRectangle>
               </PartDraw>
               <PartText name="battery_title" x="213" y="307" width="170" height="25">
-                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff565f89">~/akku</Font></Text>
+                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff565f89">~/battery</Font></Text>
               </PartText>
               <PartText name="watch_battery" x="235" y="332" width="60" height="30">
                 <Text align="START">
@@ -410,7 +410,7 @@
                 <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff6c7086">~/temp</Font></Text>
               </PartText>
               <PartText name="rain_title" x="175" y="222" width="105" height="25">
-                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff6c7086">~/regen</Font></Text>
+                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff6c7086">~/rain</Font></Text>
               </PartText>
               <PartText name="uv_title" x="307" y="222" width="105" height="25">
                 <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff6c7086">~/uv max</Font></Text>
@@ -494,7 +494,7 @@
                 </RoundRectangle>
               </PartDraw>
               <PartText name="steps_title" x="69" y="307" width="118" height="25">
-                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff6c7086">~/schritte</Font></Text>
+                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff6c7086">~/steps</Font></Text>
               </PartText>
               <Condition>
                 <Expressions>
@@ -541,7 +541,7 @@
                 </RoundRectangle>
               </PartDraw>
               <PartText name="battery_title" x="213" y="307" width="170" height="25">
-                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff6c7086">~/akku</Font></Text>
+                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff6c7086">~/battery</Font></Text>
               </PartText>
               <PartText name="watch_battery" x="235" y="332" width="60" height="30">
                 <Text align="START">
@@ -683,7 +683,7 @@
                 <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff928374">~/temp</Font></Text>
               </PartText>
               <PartText name="rain_title" x="175" y="222" width="105" height="25">
-                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff928374">~/regen</Font></Text>
+                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff928374">~/rain</Font></Text>
               </PartText>
               <PartText name="uv_title" x="307" y="222" width="105" height="25">
                 <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff928374">~/uv max</Font></Text>
@@ -767,7 +767,7 @@
                 </RoundRectangle>
               </PartDraw>
               <PartText name="steps_title" x="69" y="307" width="118" height="25">
-                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff928374">~/schritte</Font></Text>
+                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff928374">~/steps</Font></Text>
               </PartText>
               <Condition>
                 <Expressions>
@@ -814,7 +814,7 @@
                 </RoundRectangle>
               </PartDraw>
               <PartText name="battery_title" x="213" y="307" width="170" height="25">
-                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff928374">~/akku</Font></Text>
+                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff928374">~/battery</Font></Text>
               </PartText>
               <PartText name="watch_battery" x="235" y="332" width="60" height="30">
                 <Text align="START">
@@ -956,7 +956,7 @@
                 <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff616e88">~/temp</Font></Text>
               </PartText>
               <PartText name="rain_title" x="175" y="222" width="105" height="25">
-                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff616e88">~/regen</Font></Text>
+                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff616e88">~/rain</Font></Text>
               </PartText>
               <PartText name="uv_title" x="307" y="222" width="105" height="25">
                 <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff616e88">~/uv max</Font></Text>
@@ -1040,7 +1040,7 @@
                 </RoundRectangle>
               </PartDraw>
               <PartText name="steps_title" x="69" y="307" width="118" height="25">
-                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff616e88">~/schritte</Font></Text>
+                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff616e88">~/steps</Font></Text>
               </PartText>
               <Condition>
                 <Expressions>
@@ -1087,7 +1087,7 @@
                 </RoundRectangle>
               </PartDraw>
               <PartText name="battery_title" x="213" y="307" width="170" height="25">
-                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff616e88">~/akku</Font></Text>
+                <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="#ff616e88">~/battery</Font></Text>
               </PartText>
               <PartText name="watch_battery" x="235" y="332" width="60" height="30">
                 <Text align="START">
@@ -1515,28 +1515,28 @@
             <ListOption id="0">
               <Group name="slot1_empty_tokyo_night" x="0" y="0" width="330" height="31">
                 <PartText name="event_free" x="39" y="2" width="253" height="27">
-                  <Text align="CENTER"><Font family="jetbrains_mono_regular" size="19" color="#ff565f89">&gt; frei</Font></Text>
+                  <Text align="CENTER"><Font family="jetbrains_mono_regular" size="19" color="#ff565f89">&gt; free</Font></Text>
                 </PartText>
               </Group>
             </ListOption>
             <ListOption id="1">
               <Group name="slot1_empty_catppuccin_mocha" x="0" y="0" width="330" height="31">
                 <PartText name="event_free" x="39" y="2" width="253" height="27">
-                  <Text align="CENTER"><Font family="jetbrains_mono_regular" size="19" color="#ff6c7086">&gt; frei</Font></Text>
+                  <Text align="CENTER"><Font family="jetbrains_mono_regular" size="19" color="#ff6c7086">&gt; free</Font></Text>
                 </PartText>
               </Group>
             </ListOption>
             <ListOption id="2">
               <Group name="slot1_empty_gruvbox_dark" x="0" y="0" width="330" height="31">
                 <PartText name="event_free" x="39" y="2" width="253" height="27">
-                  <Text align="CENTER"><Font family="jetbrains_mono_regular" size="19" color="#ff928374">&gt; frei</Font></Text>
+                  <Text align="CENTER"><Font family="jetbrains_mono_regular" size="19" color="#ff928374">&gt; free</Font></Text>
                 </PartText>
               </Group>
             </ListOption>
             <ListOption id="3">
               <Group name="slot1_empty_nord" x="0" y="0" width="330" height="31">
                 <PartText name="event_free" x="39" y="2" width="253" height="27">
-                  <Text align="CENTER"><Font family="jetbrains_mono_regular" size="19" color="#ff616e88">&gt; frei</Font></Text>
+                  <Text align="CENTER"><Font family="jetbrains_mono_regular" size="19" color="#ff616e88">&gt; free</Font></Text>
                 </PartText>
               </Group>
             </ListOption>

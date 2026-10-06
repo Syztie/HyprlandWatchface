@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="watch_face_name">Hyprland</string>
-    <string name="complication_phone_battery">Handy-Akku</string>
-    <string name="complication_next_event">Nächster Termin</string>
-    <string name="theme_label">Thema</string>
+    <string name="complication_phone_battery">Phone battery</string>
+    <string name="complication_next_event">Next event</string>
+    <string name="theme_label">Theme</string>
 </resources>

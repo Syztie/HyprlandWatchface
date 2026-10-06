@@ -129,6 +129,15 @@ def main():
         check(ratio < AMBIENT_LIT_LIMIT, f"{name}: lit pixels in ambient {ratio:.1%} (limit {AMBIENT_LIT_LIMIT:.0%})")
         check(amb.convert("RGB").getpixel((30, 225)) == (0, 0, 0), f"{name}: ambient background black")
         print(f"  info  {name}: {ratio:.1%} lit in ambient")
+        icon_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                                 "app", "src", "main", "res", "drawable", f"theme_{name}.png")
+        icon_ok = os.path.exists(icon_path)
+        if icon_ok:
+            from PIL import Image
+            icon = Image.open(icon_path).convert("RGB")
+            px_bg = icon.getpixel((icon.width // 2, icon.height // 20))
+            icon_ok = max(abs(a - b) for a, b in zip(px_bg, want)) <= 6
+        check(icon_ok, f"{name}: theme icon exists and shows the theme background")
 
     finish()
 

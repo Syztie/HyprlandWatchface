@@ -141,7 +141,7 @@
           <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="@{muted}">~/temp</Font></Text>
         </PartText>
         <PartText name="rain_title" x="175" y="222" width="105" height="25">
-          <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="@{muted}">~/regen</Font></Text>
+          <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="@{muted}">~/rain</Font></Text>
         </PartText>
         <PartText name="uv_title" x="307" y="222" width="105" height="25">
           <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="@{muted}">~/uv max</Font></Text>
@@ -227,7 +227,7 @@
           </RoundRectangle>
         </PartDraw>
         <PartText name="steps_title" x="69" y="307" width="118" height="25">
-          <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="@{muted}">~/schritte</Font></Text>
+          <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="@{muted}">~/steps</Font></Text>
         </PartText>
         <!-- Below 1000 the full count, above "6.2k" (truncated to 100 steps).
              numberFormat("0", ...) keeps integers free of decimals and of locale
@@ -278,7 +278,7 @@
           </RoundRectangle>
         </PartDraw>
         <PartText name="battery_title" x="213" y="307" width="170" height="25">
-          <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="@{muted}">~/akku</Font></Text>
+          <Text align="START"><Font family="jetbrains_mono_regular" size="18" color="@{muted}">~/battery</Font></Text>
         </PartText>
         <PartText name="watch_battery" x="235" y="332" width="60" height="30">
           <Text align="START">
@@ -423,7 +423,7 @@
       <Complication type="EMPTY">
         <ThemeSwitch name="slot1_empty" width="330" height="31">
           <PartText name="event_free" x="39" y="2" width="253" height="27">
-            <Text align="CENTER"><Font family="jetbrains_mono_regular" size="19" color="@{muted}">&gt; frei</Font></Text>
+            <Text align="CENTER"><Font family="jetbrains_mono_regular" size="19" color="@{muted}">&gt; free</Font></Text>
           </PartText>
         </ThemeSwitch>
       </Complication>
