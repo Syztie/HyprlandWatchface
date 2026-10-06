@@ -23,6 +23,41 @@ SWITCH = re.compile(r'(?P<indent>[ \t]*)<ThemeSwitch name="(?P<name>\w+)" width=
                     r'height="(?P<h>\d+)">\n(?P<body>[\s\S]*?)\n[ \t]*</ThemeSwitch>')
 COMMENT = re.compile(r"[ \t]*<!--[\s\S]*?-->\n?")
 ROLE = re.compile(r"@\{(\w+)\}")
+MACRO = re.compile(r"@@(\w+)@@")
+
+Q = "&quot;"
+TITLE = "[COMPLICATION.TITLE]"
+TEXT = "[COMPLICATION.TEXT]"
+COLON_SEARCH = 16  # the time part ("14:00", "27 min.", "1 Std. 5 Min.") ends within 16 chars
+
+
+def _sub(value, start, end):
+    """subText with both indices clamped, so short strings never fail."""
+    length = f"textLength({value})"
+    return f"subText({value}, clamp({start}, 0, {length}), clamp({end}, 0, {length}))"
+
+
+def _first_colon(value, found, missing):
+    """Nested ternary over the first ": " at index 1..COLON_SEARCH (WFF has no indexOf)."""
+    expr = missing
+    for i in range(COLON_SEARCH, 0, -1):
+        expr = f"({_sub(value, i, i + 2)} == {Q}: {Q} ? {found(i)} : {expr})"
+    return expr
+
+
+def macros():
+    """Expressions too long to maintain by hand, XML-escaped for attributes."""
+    length = f"textLength({TEXT})"
+    tlen = f"textLength({TITLE})"
+    return {
+        # A title counts only when it is present and not empty.
+        "event_has_title": f"{TITLE} != null &amp;&amp; {tlen} &gt; 0",
+        # Title without a trailing colon ("14:00:" -> "14:00").
+        "event_title": f"({_sub(TITLE, f'{tlen} - 1', tlen)} == {Q}:{Q} ? {_sub(TITLE, 0, f'{tlen} - 1')} : {TITLE})",
+        # Text split at its first ": ": head is the time, tail keeps the space.
+        "event_head": _first_colon(TEXT, lambda i: _sub(TEXT, 0, i), TEXT),
+        "event_tail": _first_colon(TEXT, lambda i: _sub(TEXT, i + 1, length), f"{Q}{Q}"),
+    }
 
 
 def shift(text, spaces):
@@ -83,8 +118,10 @@ def generate():
             "     and watchface/themes.json. Do not edit by hand: run \"make generate\". -->")
     body = src[header_end:]
     body = body.replace("  <!-- @THEME_CONFIGURATION@ -->", configuration(cfg))
+    defs = macros()
+    body = MACRO.sub(lambda m: defs[m.group(1)], body)
     body = SWITCH.sub(lambda m: expand(m, cfg), body)
-    if "ThemeSwitch" in body or ROLE.search(body):
+    if "ThemeSwitch" in body or ROLE.search(body) or MACRO.search(body):
         raise SystemExit("unexpanded ThemeSwitch or color role left in output")
     return head + body
 

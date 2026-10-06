@@ -146,6 +146,12 @@ def main():
         ("colon in text", {"type": "LONG_TEXT", "TEXT": "14:00: Abgesagt: Kino"}, "> 14:00 abgesagt: kino"),
         ("colon, one-digit hour", {"type": "LONG_TEXT", "TEXT": "9:30: Arzt"}, "> 9:30 arzt"),
         ("no time", {"type": "LONG_TEXT", "TEXT": "Urlaub"}, "> urlaub"),
+        ("relative time in text", {"type": "LONG_TEXT", "TEXT": "27 min.: Test"}, "> 27 min. test"),
+        ("relative time, empty title", {"type": "LONG_TEXT", "TITLE": "", "TEXT": "27 min.: Test"},
+         "> 27 min. test"),
+        ("relative time in title", {"type": "LONG_TEXT", "TITLE": "27 min.:", "TEXT": "Test"}, "> 27 min. test"),
+        ("hours and minutes", {"type": "LONG_TEXT", "TEXT": "1 Std. 5 Min.: Arzt"}, "> 1 std. 5 min. arzt"),
+        ("second colon kept", {"type": "LONG_TEXT", "TEXT": "14:00: Abgesagt: Kino"}, "> 14:00 abgesagt: kino"),
         ("very short text", {"type": "SHORT_TEXT", "TEXT": "a"}, "> a"),
     ]:
         expect(f"event {label}", want in texts(now, __slot1=slot), True)

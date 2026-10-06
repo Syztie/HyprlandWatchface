@@ -150,14 +150,23 @@ eingecheckt, die CI prüft, dass sie aktuell ist.
 - Vier Flavors (je Thema einer) mit Icon, `MultipleInstancesAllowed = true`.
 - Themen-Icons (192 px) aus dem Offline-Renderer.
 - Always-on-Display: Szene schwarz, die Themenfläche liegt im aktiven Teil.
-  Sichtbar: Uhrzeit ohne Sekunden, Datum, Kalenderwoche (Rolle text), Rahmen der
-  Uhrzeit-Kachel 1,5 Einheiten. Alles andere inkl. Complications ausgeblendet.
-  Offline gemessen 3,7–3,8 % leuchtende Pixel je Thema.
+  Sichtbar: Uhrzeit ohne Sekunden, Datum, Kalenderwoche (Rolle text). Alles
+  andere inkl. Complications ausgeblendet. Offline gemessen 2,6 % leuchtende
+  Pixel je Thema.
 
 Entscheidungen:
 
-- Rahmenfarbe im AOD: Akzentfarbe. Die Vorgabe nennt für den Rahmen keine Rolle.
+- Abweichung auf deinen Wunsch: Der dünne Rahmen um die Uhrzeit, den die
+  Vorgabe im AOD vorsieht, entfällt.
 - Datum und Kalenderwoche behalten im AOD ihre Position aus der Waybar.
+
+Befund aus dem Test (06.10.): Der Doppelpunkt stand weiter da
+(`> 27 min.: test`). Samsungs Terminquelle schickt `<Zeit>: <Titel>`, und die
+Zeit ist auch relativ (`27 min.`). Neue Lösung: Makros in
+`tools/build_watchface.py` suchen das erste `": "` in den ersten 16 Zeichen
+(WFF hat kein `indexOf`) und entfernen den Doppelpunkt. Ein leerer Titel zählt
+wie kein Titel. Bekannte Grenze: Ein Termin ohne Zeitangabe, dessen Titel selbst
+früh ein `": "` enthält, verliert diesen Doppelpunkt.
 
 ## M7 Abschluss
 

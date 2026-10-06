@@ -34,8 +34,8 @@ braucht zehn Rollen. Deshalb ist das Thema eine Listen-Auswahl, und
 einmal pro Thema mit festen Farben in die XML. Neue Farben oder ein fünftes
 Thema: `watchface/themes.json` ändern, `make icons generate` ausführen.
 
-Im Always-on-Display bleiben auf schwarzem Grund nur Uhrzeit, Datum,
-Kalenderwoche und ein dünner Rahmen um die Uhrzeit (unter 4 % leuchtende Pixel).
+Im Always-on-Display bleiben auf schwarzem Grund nur Uhrzeit, Datum und
+Kalenderwoche (rund 3 % leuchtende Pixel).
 
 ## Testen nur mit Handy und Uhr
 
